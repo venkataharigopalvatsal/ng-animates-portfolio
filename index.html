@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NG ANIMATES | Official Channel</title>
+    <style>
+        /* Base Reset & Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark, #0a0c10);
+            color: var(--text-main, #f0f6fc);
+            overflow-x: hidden;
+            background-image: var(--bg-gradient, radial-gradient(circle at 50% 20%, #161b26 0%, #0a0c10 70%));
+            transition: background 0.8s ease, color 0.8s ease, background-image 0.8s ease;
+        }
+
+        /* Mysterious Glow Animation */
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px var(--neon-glow); }
+            50% { box-shadow: 0 0 30px var(--neon-cyan); }
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 5% 1rem 5%;
+        }
+
+        /* Unique Rearranging Interactive Logo */
+        .logo-text {
+            font-weight: 800;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: var(--text-main);
+            text-transform: uppercase;
+            cursor: pointer;
+            user-select: none;
+            display: inline-flex;
+        }
+
+        .logo-text span {
+            display: inline-block;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.6s ease;
+        }
+
+        .logo-text .accent-letter {
+            color: var(--neon-cyan, #00f3ff);
+            text-shadow: 0 0 10px var(--neon-glow, rgba(0, 243, 255, 0.4));
+        }
+
+        /* Scattered state triggered via JS */
+        .logo-text.scattered span:nth-child(odd) {
+            transform: translateY(-8px) rotate(-25deg) scale(0.8);
+        }
+        .logo-text.scattered span:nth-child(even) {
+            transform: translateY(10px) rotate(30deg) scale(1.2);
+        }
+
+        .nav-links a {
+            color: var(--text-muted, #8b949e);
+            text-decoration: none;
+            margin-left: 2rem;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--neon-cyan);
+        }
+
+        /* Genre Selector Bar */
+        .genre-selector-container {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem 1.5rem 1rem;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+            flex-wrap: wrap;
+            transition: border 0.8s ease;
+        }
+
+        .genre-btn {
+            background: transparent;
+            border: 1px solid rgba(128, 128, 128, 0.3);
+            color: var(--text-muted);
+            padding: 0.4rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .genre-btn:hover, .genre-btn.active {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+            box-shadow: 0 0 10px var(--neon-glow);
+            background: rgba(128, 128, 128, 0.05);
+        }
+
+        /* Hero Section */
+        header {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 1rem;
+            transition: color 0.5s ease;
+        }
+
+        .hero-title span {
+            color: var(--neon-cyan);
+            text-shadow: 0 0 15px var(--neon-glow);
+            transition: color 0.5s ease, text-shadow 0.5s ease;
+        }
+
+        .hero-subtitle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 3rem auto;
+            line-height: 1.6;
+        }
+
+        /* Video Container: Fluidly responds to any input frame scale dimensions */
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 850px; /* Upper width ceiling for wide edits */
+            max-height: 75vh; /* Upper height ceiling for vertical layouts */
+            margin: 0 auto 5rem auto;
+            background: var(--bg-card, #121620);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 12px;
+            animation: pulseGlow 4s infinite ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.8s ease, border 0.8s ease;
+            overflow: hidden;
+        }
+
+        .video-container video {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+            object-fit: contain; /* Keeps everything framed cleanly inside without slicing */
+            background: #000;
+        }
+
+        /* Baseline fallback landscape rule when showing only a basic text placeholder */
+        .video-container:not(:has(video)) {
+            aspect-ratio: 16 / 9;
+        }
+
+        .video-placeholder {
+            color: var(--text-muted);
+            font-style: italic;
+            padding: 1rem;
+        }
+
+        /* Content Sections */
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 3rem;
+        }
+
+        .section-title span {
+            color: var(--neon-cyan);
+        }
+
+        .grid-container {
+            max-width: 1200px;
+            margin: 0 auto 5rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .card {
+            background: var(--bg-card, #121620);
+            border: 1px solid rgba(128, 128, 128, 0.15);
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.5s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 5px 20px var(--neon-glow);
+        }
+
+        .card-tag {
+            color: var(--neon-cyan);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .card h3 {
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        /* Call To Action Button */
+        .cta-btn {
+            display: inline-block;
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 2px solid var(--neon-cyan);
+            padding: 0.8rem 2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px var(--neon-glow);
+        }
+
+        .cta-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 0 25px var(--neon-cyan);
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(128, 128, 128, 0.15);
+            transition: border 0.8s ease;
+        }
+
+        /* ==========================================================================
+           FUN FEATURES & OVERLAYS SYSTEM
+           ========================================================================== */
+        .fun-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Horror Mode Elements */
+        #horror-jumpscare {
+            background: #000;
+        }
+        .jumpscare-creature {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.5);
+            animation: flashShake 0.15s infinite;
+        }
+        @keyframes flashShake {
+            0% { transform: scale(1.5) translate(4px, -2px) cubic-bezier(0.1,0.9,0.2,1); filter: invert(0); }
+            50% { transform: scale(1.6) translate(-4px, 3px); filter: invert(0.3); }
+            100% { transform: scale(1.4) translate(2px, 2px); filter: invert(0); }
+        }
+
+        /* Comedy Mode Elements */
+        #comedy-overlay {
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(4px);
+        }
+        .deadpool-box {
+            background: #1e1e24;
+            border: 3px solid #a600ff;
+            box-shadow: 0 10px 30px rgba(166, 0, 255, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            color: #fff;
+        }
+        .deadpool-img {
+            width: 100%;
+            max-height: 240px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        .deadpool-btn {
+            background: #e61a22;
+            color: #fff;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0.5rem;
+            transition: transform 0.2s;
+        }
+        .deadpool-btn:hover { transform: scale(1.05); }
+
+        /* Cyberpunk Dino Game */
+        #cyberpunk-overlay {
+            background: rgba(10, 12, 16, 0.95);
+        }
+        .game-wrapper {
+            background: #121620;
+            border: 2px solid #00f3ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+        #gameCanvas {
+            background: #0a0c10;
+            border-bottom: 2px solid #00f3ff;
+            display: block;
+            margin: 1rem auto;
+        }
+
+        /* Wholesome Break Box */
+        #wholesome-overlay {
+            background: rgba(255, 249, 242, 0.85);
+            backdrop-filter: blur(6px);
+        }
+        .cozy-box {
+            background: #ffffff;
+            border: 2px solid #ff7b9e;
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 420px;
+            text-align: center;
+            color: #4a3e3d;
+            box-shadow: 0 10px 25px rgba(255, 123, 158, 0.15);
+        }
+        .cozy-icon { font-size: 3rem; margin-bottom: 1rem; display: inline-block; animation: float 3s infinite ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        
+        /* Floating Canvas particles */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 10000;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo-text" id="interactive-logo">
+            <span id="letter-1">N</span><span id="letter-2">G</span>&nbsp;
+            <span class="accent-letter">A</span><span class="accent-letter">N</span><span class="accent-letter">I</span><span class="accent-letter">M</span><span class="accent-letter">A</span><span class="accent-letter">T</span><span class="accent-letter">E</span><span class="accent-letter">S</span>
+        </div>
+        <div class="nav-links">
+            <a href="#videos">Videos</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <div class="genre-selector-container" id="genre-selector-bar"></div>
+
+    <header>
+        <h1 class="hero-title" id="hero-heading">Step Into The <span>Unknown</span></h1>
+        <p class="hero-subtitle" id="hero-subheading">
+            High-energy visual storytelling, deep atmospheres, and worlds crafted frame by frame. Explore the creative archive below.
+        </p>
+        
+        <div class="video-container" id="videos">
+            <div class="video-placeholder" id="video-text">
+                [ Your YouTube Trailer / Latest Video Embed Goes Here ]
+            </div>
+        </div>
+
+        <a href="https://youtube.com" target="_blank" class="cta-btn" id="cta-button">Subscribe on YouTube</a>
+    </header>
+
+    <h2 class="section-title" id="section-heading">Latest <span>Creations</span></h2>
+    <main class="grid-container" id="projects-grid">
+        <div class="card">
+            <span class="card-tag">Project 01</span>
+            <h3>The Midnight Protocol</h3>
+            <p>A look into cinematic style pacing, deep neon drop shadows, and dark cybernetic narrative structures.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Project 02</span>
+            <h3>Eclipse Phase</h3>
+            <p>Experimenting with dynamic motion, extreme lighting contrasts, and fluid physics simulation mechanics.</p>
+        </div>
+        <div class="card">
+            <span class="card-tag">Behind The Scenes</span>
+            <h3>The Layout Process</h3>
+            <p>A peek into the dark room. Breaking down custom canvas rendering, timeline syncing, and style design.</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 NG ANIMATES. All rights reserved.</p>
+    </footer>
+
+    <div id="horror-jumpscare" class="fun-overlay">
+        <div style="font-size: 10rem; text-shadow: 0 0 40px red;">💀</div>
+    </div>
+
+    <div id="comedy-overlay" class="fun-overlay">
+        <div class="deadpool-box">
+            <img id="deadpool-display-img" class="deadpool-img" src="dpshock.jpg" alt="Deadpool">
+            <h3 id="deadpool-text" style="margin-bottom: 1rem;">Am I here or not?</h3>
+            <div id="comedy-actions">
+                <button class="deadpool-btn" onclick="advanceComedy()">Yes</button>
+                <button class="deadpool-btn" onclick="resetIdleSystem()">No</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cyberpunk-overlay" class="fun-overlay">
+        <div class="game-wrapper">
+            <h3 style="color: #00f3ff; margin-bottom: 0.5rem;">NEON RUNNER v1.0</h3>
+            <p style="font-size: 0.8rem; color: #8b949e;">Press [SPACEBAR] or tap screen to Jump. Avoid obstacles.</p>
+            <canvas id="gameCanvas" width="480" height="160"></canvas>
+            <button class="genre-btn" onclick="closeCyberpunkGame()">Exit Game</button>
+        </div>
+    </div>
+
+    <div id="wholesome-overlay" class="fun-overlay">
+        <div class="cozy-box">
+            <span class="cozy-icon">🌸</span>
+            <h3 style="margin-bottom: 0.5rem;">Time for a screen break</h3>
+            <p style="font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.4;">You've been lingering around for a bit. Want to brew a magical cup of tea?</p>
+            <button class="cta-btn" style="font-size:0.8rem; padding: 0.5rem 1.5rem;" onclick="triggerWholesomeHearts()">Brew Tea</button>
+            <button class="genre-btn" style="margin-left:0.5rem;" onclick="resetIdleSystem()">Just Browsing</button>
+        </div>
+    </div>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <script>
+        const logo = document.getElementById('interactive-logo');
+        const letter1 = document.getElementById('letter-1');
+        const letter2 = document.getElementById('letter-2');
+        const root = document.documentElement;
+        const selectorBar = document.getElementById('genre-selector-bar');
+
+        const heroHeading = document.getElementById('hero-heading');
+        const heroSubheading = document.getElementById('hero-subheading');
+        const sectionHeading = document.getElementById('section-heading');
+        const projectsGrid = document.getElementById('projects-grid');
+        const videoContainer = document.getElementById('videos');
+
+        // All Genre Profiles
+        const genres = [
+            {
+                name: 'cyberpunk', label: 'Cyberpunk',
+                theme: { '--bg-dark': '#0a0c10', '--bg-card': '#121620', '--neon-cyan': '#00f3ff', '--neon-glow': 'rgba(0, 243, 255, 0.4)', '--text-main': '#f0f6fc', '--text-muted': '#8b949e', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #161b26 0%, #0a0c10 70%)' },
+                content: { isVideo: false, heroTitle: 'Step Into The <span>Unknown</span>', heroSubtitle: 'High-energy visual storytelling, deep atmospheres, and worlds crafted frame by frame. Explore the creative archive.', sectionTitle: 'Latest <span>Creations</span>', videoPlaceholder: '[ Cyberpunk Cinematic Trailer Loop Embed ]', cards: [{ tag: 'Project 01', title: 'The Midnight Protocol', desc: 'A look into cinematic style pacing, deep neon drop shadows, and dark cybernetic narrative structures.' }, { tag: 'Project 02', title: 'Eclipse Phase', desc: 'Experimenting with dynamic motion, extreme lighting contrasts, and fluid physics simulation mechanics.' }, { tag: 'Behind The Scenes', title: 'The Layout Process', desc: 'Breaking down custom canvas rendering, timeline syncing, and heavy asset rendering layouts.' }] }
+            },
+            {
+                name: 'wholesome', label: 'Wholesome',
+                theme: { '--bg-dark': '#fff9f2', '--bg-card': '#ffffff', '--neon-cyan': '#ff7b9e', '--neon-glow': 'rgba(255, 123, 158, 0.3)', '--text-main': '#4a3e3d', '--text-muted': '#8c7a78', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #ffeef2 0%, #fff9f2 70%)' },
+                content: { isVideo: false, heroTitle: 'Welcome to the <span>Comfort Zone</span>', heroSubtitle: 'Soft frames, heartwarming characters, and relaxing slice-of-life animation sketches. Unwind and stay a while.', sectionTitle: 'Cozy <span>Collections</span>', videoPlaceholder: '[ Relaxing Wholesome Lo-Fi Animation Loop Goes Here ]', cards: [{ tag: 'Sketch 01', title: 'Sunday Morning Coffee', desc: 'A gentle exploration of soft focus, warm lighting updates, and casual slice-of-life pacing.' }, { tag: 'Sketch 02', title: 'Fluffy Companions', desc: 'Focusing on organic character lines, bouncy physics transitions, and expressive animal animations.' }, { tag: 'Behind The Scenes', title: 'The Storyboarding Stage', desc: 'Crafting warm narratives, drafting clean layouts, and choosing soft pastel palette harmonies.' }] }
+            },
+            {
+                name: 'horror', label: 'Horror',
+                theme: { '--bg-dark': '#050505', '--bg-card': '#0d0d0d', '--neon-cyan': '#ff003c', '--neon-glow': 'rgba(255, 0, 60, 0.4)', '--text-main': '#e0e0e0', '--text-muted': '#555555', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #20050b 0%, #050505 80%)' },
+                content: { isVideo: false, heroTitle: 'Do Not Turn <span>Around</span>', heroSubtitle: 'Psychological thrillers, eerie frame manipulation, and liminal space horror. Watch under your own discretion.', sectionTitle: 'Nightmare <span>Logs</span>', videoPlaceholder: '[ Restricted Distorted VHS Tape Broadcast Playback ]', cards: [{ tag: 'Tape 01', title: 'The Static Room', desc: 'Experimenting with artifact glitch layers, analog noise simulation, and subtle jump-scare vector pacing.' }, { tag: 'Tape 02', title: 'Uncanny Valley', desc: 'Deconstructive character modeling that mimics human movement just poorly enough to terrify.' }, { tag: 'Behind The Shadows', title: 'Sound Design Panic', desc: 'How binaural audio spikes and low-frequency ambient drones drastically alter the animation fear engine.' }] }
+            },
+            {
+                name: 'comedy', label: 'Comedy',
+                theme: { '--bg-dark': '#1a0b2e', '--bg-card': '#2d144d', '--neon-cyan': '#a600ff', '--neon-glow': 'rgba(166, 0, 255, 0.4)', '--text-main': '#fdf6ff', '--text-muted': '#a78cbf', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #3e1259 0%, #1a0b2e 70%)' },
+                content: { isVideo: false, heroTitle: 'Expect The <span>Absurd</span>', heroSubtitle: 'Squash-and-stretch turned up to eleven. Hilarious parodies, expressive faces, and pure comedic timing.', sectionTitle: 'Gag <span>Archive</span>', videoPlaceholder: '[ Warning: Do Not Drink Liquids While Watching This Skit Loop ]', cards: [{ tag: 'Episode 01', title: 'Physics Has Left The Chat', desc: 'Breaking every known animation structural rule just to land a ridiculous visual punchline.' }, { tag: 'Episode 02', title: 'Extreme Face Inversions', desc: 'A deep dive into micro-expression exaggeration tactics for maximum unexpected shock value.' }, { tag: 'Behind The Laughs', title: 'Timing The Punchline', desc: 'Analyzing the frame gap math needed between setup, anticipation, and final visual payoff.' }] }
+            },
+            {
+                name: 'n-genre', label: 'N-Genre',
+                theme: { 
+                    '--bg-dark': '#060709', 
+                    '--bg-card': '#10131a', 
+                    '--neon-cyan': '#d4af37', 
+                    '--neon-glow': 'rgba(212, 175, 55, 0.3)', 
+                    '--text-main': '#f0f6fc', 
+                    '--text-muted': '#8b949e', 
+                    '--bg-gradient': 'radial-gradient(circle at 50% 25%, #1a1510 0%, #060709 80%)' 
+                },
+                content: { 
+                    isVideo: true, 
+                    videoSrc: 'The Chiron_edit.mp4', 
+                    heroTitle: 'The <span>Chiron</span> Perspective', 
+                    heroSubtitle: 'Framing high-octane motion profiles, sleek architectural backdrops, and seamless jump-cut edits into a singular workflow.', 
+                    sectionTitle: 'Production <span>Timeline</span>', 
+                    cards: [
+                        { tag: 'Frame 01 - Intro', title: 'The Darkness', desc: 'Setting the mood with hidden silhouettes, aggressive red backlighting, and heavy sub-bass transitions.' }, 
+                        { tag: 'Frame 02 - Core Edit', title: 'Identity Intercept', desc: 'Splicing sharp portrait layouts directly into fast panning sequences to anchor character presence.' }, 
+                        { tag: 'Frame 03 - Outro', title: 'The Gold Standard', desc: 'Concluding with static wide shots, deep shadows, and an ultra-premium final stance contrast alignment.' }
+                    ] 
+                }
+            }
+        ];
+
+        let currentGenreIndex = 0;
+        let isNgLayout = true; 
+
+        // Generate Genre Buttons
+        genres.forEach((genre, index) => {
+            const btn = document.createElement('button');
+            btn.className = `genre-btn ${index === 0 ? 'active' : ''}`;
+            btn.textContent = genre.label;
+            btn.setAttribute('data-index', index);
+            btn.addEventListener('click', () => {
+                if(currentGenreIndex === index) return;
+                currentGenreIndex = index;
+                triggerTransition(genres[currentGenreIndex]);
+            });
+            selectorBar.appendChild(btn);
+        });
+
+        logo.addEventListener('click', () => {
+            currentGenreIndex = (currentGenreIndex + 1) % genres.length;
+            triggerTransition(genres[currentGenreIndex]);
+        });
+
+        function triggerTransition(targetGenre) {
+            logo.classList.add('scattered');
+            setTimeout(() => {
+                if (isNgLayout) { letter1.textContent = 'G'; letter2.textContent = 'N'; } 
+                else { letter1.textContent = 'N'; letter2.textContent = 'G'; }
+                isNgLayout = !isNgLayout;
+
+                Object.keys(targetGenre.theme).forEach(key => { root.style.setProperty(key, targetGenre.theme[key]); });
+                updateWebsiteContent(targetGenre.content);
+
+                const allButtons = selectorBar.querySelectorAll('.genre-btn');
+                allButtons.forEach((btn, idx) => {
+                    if(idx === currentGenreIndex) btn.classList.add('active');
+                    else btn.classList.remove('active');
+                });
+                logo.classList.remove('scattered');
+                resetIdleSystem();
+            }, 300);
+        }
+
+        function updateWebsiteContent(content) {
+            heroHeading.innerHTML = content.heroTitle;
+            heroSubheading.textContent = content.heroSubtitle;
+            sectionHeading.innerHTML = content.sectionTitle;
+
+            // Handle switching between dynamic video player and textual placeholder
+            if (content.isVideo) {
+                videoContainer.innerHTML = `<video src="${content.videoSrc}" controls autoplay loop muted></video>`;
+                const videoEl = videoContainer.querySelector('video');
+                videoEl.onplay = () => { isVideoPlaying = true; clearTimeout(idleTimer); };
+                videoEl.onpause = () => { isVideoPlaying = false; resetIdleSystem(); };
+            } else {
+                isVideoPlaying = false;
+                videoContainer.innerHTML = `<div class="video-placeholder" id="video-text">${content.videoPlaceholder}</div>`;
+            }
+
+            const cards = projectsGrid.querySelectorAll('.card');
+            content.cards.forEach((data, index) => {
+                if(cards[index]) {
+                    cards[index].querySelector('.card-tag').textContent = data.tag;
+                    cards[index].querySelector('h3').textContent = data.title;
+                    cards[index].querySelector('p').textContent = data.desc;
+                }
+            });
+        }
+
+        // ==========================================================================
+        // IDLE MANAGEMENT SYSTEM (10 Seconds Tracker)
+        // ==========================================================================
+        let idleTimer;
+        let isFeatureActive = false;
+        let isVideoPlaying = false; 
+
+        function resetIdleSystem() {
+            document.querySelectorAll('.fun-overlay').forEach(el => el.style.display = 'none');
+            isFeatureActive = false;
+            
+            clearTimeout(idleTimer);
+            if (!isVideoPlaying) {
+                idleTimer = setTimeout(triggerFunFeature, 10000); 
+            }
+        }
+
+        ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
+            window.addEventListener(evt, () => {
+                if (!isFeatureActive) resetIdleSystem();
+            });
+        });
+
+        function triggerFunFeature() {
+            isFeatureActive = true;
+            const currentGenre = genres[currentGenreIndex].name;
+
+            if (currentGenre === 'horror') {
+                document.getElementById('horror-jumpscare').style.display = 'flex';
+                setTimeout(resetIdleSystem, 1500);
+            } 
+            else if (currentGenre === 'comedy') {
+                document.getElementById('deadpool-display-img').src = 'dpshock.jpg'; 
+                document.getElementById('deadpool-text').textContent = "Am I here or not?";
+                document.getElementById('comedy-actions').style.display = 'block';
+                document.getElementById('comedy-overlay').style.display = 'flex';
+            } 
+            else if (currentGenre === 'cyberpunk') {
+                document.getElementById('cyberpunk-overlay').style.display = 'flex';
+                startCyberpunkGame();
+            } 
+            else if (currentGenre === 'wholesome') {
+                document.getElementById('wholesome-overlay').style.display = 'flex';
+            }
+            else if (currentGenre === 'n-genre') {
+                isFeatureActive = false;
+            }
+        }
+
+        // Comedy Mode Action Chain
+        function advanceComedy() {
+            document.getElementById('deadpool-display-img').src = 'dpbduck.jpg'; 
+            document.getElementById('deadpool-text').textContent = "Taking you right back to where you left off...";
+            document.getElementById('comedy-actions').style.display = 'none';
+            setTimeout(resetIdleSystem, 2500);
+        }
+
+        // Cyberpunk Runner Game Engine Implementation
+        let gameInterval;
+        function startCyberpunkGame() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            let player = { x: 30, y: 110, w: 20, h: 30, dy: 0, grounded: true };
+            let obstacles = [];
+            let gameScore = 0;
+            let frameCount = 0;
+
+            function spawnObstacle() {
+                obstacles.push({ x: 480, y: 120, w: 15, h: 20 });
+            }
+
+            function updateGame() {
+                frameCount++;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (!player.grounded) {
+                    player.dy += 0.6;
+                    player.y += player.dy;
+                    if (player.y >= 110) {
+                        player.y = 110;
+                        player.dy = 0;
+                        player.grounded = true;
+                    }
+                }
+
+                ctx.fillStyle = '#00f3ff';
+                ctx.fillRect(player.x, player.y, player.w, player.h);
+
+                if (frameCount % 90 === 0) spawnObstacle();
+
+                for (let i = obstacles.length - 1; i >= 0; i--) {
+                    obstacles[i].x -= 4;
+                    ctx.fillStyle = '#ff003c';
+                    ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacles[i].w, obstacles[i].h);
+
+                    if (player.x < obstacles[i].x + obstacles[i].w &&
+                        player.x + player.w > obstacles[i].x &&
+                        player.y < obstacles[i].y + obstacles[i].h &&
+                        player.y + player.h > obstacles[i].y) {
+                        gameScore = 0;
+                        obstacles = [];
+                    }
+
+                    if (obstacles[i] && obstacles[i].x < -20) {
+                        obstacles.splice(i, 1);
+                        gameScore++;
+                    }
+                }
+
+                ctx.fillStyle = '#fff';
+                ctx.fillText(`SCORE: ${gameScore}`, 15, 20);
+            }
+
+            window.addEventListener('keydown', function handleJump(e) {
+                if (e.code === 'Space' && player.grounded) {
+                    player.dy = -9;
+                    player.grounded = false;
+                    e.preventDefault();
+                }
+            });
+
+            canvas.onclick = () => {
+                if (player.grounded) {
+                    player.dy = -9;
+                    player.grounded = false;
+                }
+            };
+
+            clearInterval(gameInterval);
+            gameInterval = setInterval(updateGame, 1000 / 60);
+        }
+
+        function closeCyberpunkGame() {
+            clearInterval(gameInterval);
+            resetIdleSystem();
+        }
+
+        // Wholesome Particle System Engine
+        function triggerWholesomeHearts() {
+            document.getElementById('wholesome-overlay').style.display = 'none';
+            const pCanvas = document.getElementById('particleCanvas');
+            const pCtx = pCanvas.getContext('2d');
+            pCanvas.style.display = 'block';
+            pCanvas.width = window.innerWidth;
+            pCanvas.height = window.innerHeight;
+
+            let particles = [];
+            for (let i = 0; i < 40; i++) {
+                particles.push({
+                    x: Math.random() * pCanvas.width,
+                    y: pCanvas.height + Math.random() * 100,
+                    size: Math.random() * 15 + 10,
+                    speed: Math.random() * 2 + 1,
+                    alpha: 1
+                });
+            }
+
+            function drawHearts() {
+                pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+                let alive = false;
+
+                particles.forEach(p => {
+                    p.y -= p.speed;
+                    p.alpha -= 0.005;
+                    if (p.alpha > 0) {
+                        alive = true;
+                        pCtx.fillStyle = `rgba(255, 123, 158, ${p.alpha})`;
+                        pCtx.font = `${p.size}px Arial`;
+                        pCtx.fillText('🌸', p.x, p.y);
+                    }
+                });
+
+                if (alive) {
+                    requestAnimationFrame(drawHearts);
+                } else {
+                    pCanvas.style.display = 'none';
+                    resetIdleSystem();
+                }
+            }
+            drawHearts();
+        }
+
+        // Initialize on boot
+        resetIdleSystem();
+    </script>
+</body>
+</html>
