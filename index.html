@@ -24,30 +24,88 @@
 
         /* Mysterious Glow Animation */
         @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 15px var(--neon-glow); }
+            0%, 100% { box-shadow: 0 0 15px var(--neon-glow, var(--neon-cyan)); }
             50% { box-shadow: 0 0 30px var(--neon-cyan); }
         }
 
+        /* Age Verification Overlay */
+        .age-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 12, 16, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .age-box {
+            background: #121620;
+            border: 2px solid #00f3ff;
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.2);
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .age-box h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #f0f6fc;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .age-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
         /* Navigation */
+        /* ── Sticky Navigation ── */
         nav {
+            position: sticky;
+            top: 0;
+            z-index: 9000;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 5%;
-            flex-wrap: wrap;
+            padding: 1rem 5%;
             gap: 1rem;
+            background: rgba(10, 12, 16, 0.6);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(128, 128, 128, 0.08);
+            transition: background 0.4s ease, border-color 0.4s ease, padding 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* Unique Rearranging Interactive Logo */
+        nav.scrolled {
+            background: rgba(10, 12, 16, 0.92);
+            border-bottom-color: rgba(128, 128, 128, 0.18);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            padding: 0.65rem 5%;
+        }
+
         .logo-text {
             font-weight: 800;
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            font-size: clamp(1.1rem, 3.5vw, 1.4rem);
             letter-spacing: 2px;
             color: var(--text-main);
             text-transform: uppercase;
             cursor: pointer;
             user-select: none;
             display: inline-flex;
+            flex-wrap: wrap;
+            flex-shrink: 0;
         }
 
         .logo-text span {
@@ -60,40 +118,318 @@
             text-shadow: 0 0 10px var(--neon-glow, rgba(0, 243, 255, 0.4));
         }
 
-        /* Scattered state triggered via JS */
-        .logo-text.scattered span:nth-child(odd) {
-            transform: translateY(-8px) rotate(-25deg) scale(0.8);
-        }
-        .logo-text.scattered span:nth-child(even) {
-            transform: translateY(10px) rotate(30deg) scale(1.2);
-        }
+        .logo-text.scattered span:nth-child(odd) { transform: translateY(-8px) rotate(-25deg) scale(0.8); }
+        .logo-text.scattered span:nth-child(even) { transform: translateY(10px) rotate(30deg) scale(1.2); }
 
-        .nav-links {
+        /* ── YouTube-style search wrapper ── */
+        .nav-controls {
             display: flex;
-            gap: 1.5rem;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            justify-content: center;
+            max-width: 560px;
+            margin: 0 auto;
         }
 
-        .nav-links a {
+        .search-wrapper {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(128, 128, 128, 0.28);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+        }
+
+        .search-wrapper:focus-within {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 0 3px var(--neon-glow, rgba(0,243,255,0.15));
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-bar {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            padding: 0.55rem 1rem;
+            font-size: 0.88rem;
+            outline: none;
+            min-width: 0;
+        }
+
+        .search-bar::placeholder { color: var(--text-muted, #8b949e); }
+
+        .search-clear-btn {
+            background: none;
+            border: none;
             color: var(--text-muted, #8b949e);
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.3s ease;
+            padding: 0 0.75rem;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            display: none;
+            transition: color 0.2s;
         }
+        .search-clear-btn:hover { color: var(--text-main); }
+        .search-clear-btn.visible { display: flex; align-items: center; }
 
-        .nav-links a:hover {
-            color: var(--neon-cyan);
+        .search-submit-btn {
+            background: rgba(128,128,128,0.12);
+            border: none;
+            border-left: 1px solid rgba(128,128,128,0.2);
+            color: var(--text-muted, #8b949e);
+            padding: 0.55rem 1rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s, color 0.2s;
         }
+        .search-submit-btn:hover { background: var(--neon-cyan); color: var(--bg-dark); }
 
-        /* Genre Selector Bar */
-        .genre-selector-container {
+        /* ── Nav right buttons ── */
+        .nav-right {
             display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .options-btn {
+            background: transparent;
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 0.45rem 0.9rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .options-btn:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--neon-cyan);
+        }
+
+        /* ── Donate Button ── */
+        .donate-btn {
+            background: linear-gradient(135deg, #f9a825, #ff6f00);
+            border: none;
+            color: #fff;
+            padding: 0.45rem 0.9rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 0 12px rgba(249, 168, 37, 0.3);
+        }
+
+        .donate-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(249, 168, 37, 0.5);
+            filter: brightness(1.1);
+        }
+
+        /* ── Donate Modal ── */
+        #donate-modal .options-modal {
+            max-width: 360px;
+            text-align: center;
+        }
+
+        .qr-placeholder {
+            width: 220px;
+            height: 220px;
+            margin: 1.2rem auto;
+            background: #fff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-size: 0.8rem;
+            font-style: italic;
+            border: 3px solid var(--neon-cyan);
+            overflow: hidden;
+        }
+
+        .qr-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .donate-upi-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .donate-upi-id {
+            font-size: 0.95rem;
+            color: var(--neon-cyan);
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--neon-cyan);
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            transition: all 0.2s;
+        }
+        .donate-upi-id:hover { background: var(--neon-cyan); color: var(--bg-dark); }
+
+        /* ── Genre sticky bar ── */
+        .genre-tab-container {
+            position: sticky;
+            top: calc(3.5rem);
+            z-index: 8999;
+            background: rgba(10, 12, 16, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+
+        /* Options Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 100001;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .options-modal {
+            background: var(--bg-card, #121620);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 12px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            color: var(--text-main);
+        }
+
+        .options-modal h3 {
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--neon-cyan);
+            text-align: center;
+        }
+
+        .option-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .option-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .option-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .option-toggle input {
+            cursor: pointer;
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: var(--neon-cyan);
+        }
+
+        .color-pickers {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .color-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .color-row input[type="color"] {
+            background: none;
+            border: none;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+
+        .close-modal-btn {
+            width: 100%;
+            margin-top: 1rem;
+            padding: 0.8rem;
+            background: var(--neon-cyan);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .close-modal-btn:hover { opacity: 0.8; }
+
+        /* Genre Tab */
+        .genre-tab-container {
+            text-align: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+            transition: border 0.8s ease, background 0.8s ease;
+        }
+
+        .genre-tab-trigger {
+            background: transparent;
+            border: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            padding: 0.6rem 2.5rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-glow, rgba(0,243,255,0.2));
+            transition: all 0.3s ease;
+        }
+
+        .genre-tab-trigger:hover {
+            background: var(--neon-cyan);
+            color: var(--bg-dark);
+            box-shadow: 0 0 20px var(--neon-cyan);
+        }
+
+        .genre-selector-container {
+            display: none;
             justify-content: center;
             gap: 0.5rem;
-            padding: 0.5rem 1rem 1.5rem 1rem;
-            border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+            padding: 1.5rem 1rem 0.5rem 1rem;
             flex-wrap: wrap;
-            transition: border 0.8s ease;
         }
+
+        .genre-selector-container.open { display: flex; }
 
         .genre-btn {
             background: transparent;
@@ -112,11 +448,11 @@
         .genre-btn:hover, .genre-btn.active {
             border-color: var(--neon-cyan);
             color: var(--neon-cyan);
-            box-shadow: 0 0 10px var(--neon-glow);
+            box-shadow: 0 0 10px var(--neon-glow, rgba(0,243,255,0.2));
             background: rgba(128, 128, 128, 0.05);
         }
 
-        /* Hero Section */
+        /* Hero & Content */
         header {
             max-width: 1200px;
             margin: clamp(2rem, 8vw, 4rem) auto;
@@ -135,7 +471,7 @@
 
         .hero-title span {
             color: var(--neon-cyan);
-            text-shadow: 0 0 15px var(--neon-glow);
+            text-shadow: 0 0 15px var(--neon-glow, var(--neon-cyan));
             transition: color 0.5s ease, text-shadow 0.5s ease;
         }
 
@@ -147,7 +483,6 @@
             line-height: 1.6;
         }
 
-        /* Video Container */
         .video-container {
             position: relative;
             width: 100%;
@@ -165,27 +500,10 @@
             overflow: hidden;
         }
 
-        .video-container video {
-            width: 100%;
-            height: auto;
-            max-height: 75vh;
-            display: block;
-            object-fit: contain;
-            background: #000;
-        }
+        .video-container video { width: 100%; height: auto; max-height: 75vh; display: block; object-fit: contain; background: #000; }
+        .video-container:not(:has(video)) { aspect-ratio: 16 / 9; }
+        .video-placeholder { color: var(--text-muted); font-style: italic; padding: 1.5rem; font-size: clamp(0.85rem, 2.5vw, 1rem); }
 
-        .video-container:not(:has(video)) {
-            aspect-ratio: 16 / 9;
-        }
-
-        .video-placeholder {
-            color: var(--text-muted);
-            font-style: italic;
-            padding: 1.5rem;
-            font-size: clamp(0.85rem, 2.5vw, 1rem);
-        }
-
-        /* Content Sections */
         .section-title {
             text-align: center;
             font-size: clamp(1.5rem, 5vw, 2rem);
@@ -194,9 +512,7 @@
             margin-bottom: 2.5rem;
         }
 
-        .section-title span {
-            color: var(--neon-cyan);
-        }
+        .section-title span { color: var(--neon-cyan); }
 
         .grid-container {
             max-width: 1200px;
@@ -218,7 +534,7 @@
         .card:hover {
             transform: translateY(-5px);
             border-color: var(--neon-cyan);
-            box-shadow: 0 5px 20px var(--neon-glow);
+            box-shadow: 0 5px 20px var(--neon-glow, rgba(0,243,255,0.2));
         }
 
         .card-tag {
@@ -230,18 +546,9 @@
             display: inline-block;
         }
 
-        .card h3 {
-            margin-bottom: 0.75rem;
-            font-size: clamp(1.2rem, 4vw, 1.4rem);
-        }
+        .card h3 { margin-bottom: 0.75rem; font-size: clamp(1.2rem, 4vw, 1.4rem); }
+        .card p { color: var(--text-muted); line-height: 1.5; font-size: 0.95rem; }
 
-        .card p {
-            color: var(--text-muted);
-            line-height: 1.5;
-            font-size: 0.95rem;
-        }
-
-        /* Call To Action Button */
         .cta-btn {
             display: inline-block;
             background: transparent;
@@ -256,7 +563,7 @@
             cursor: pointer;
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 0 10px var(--neon-glow);
+            box-shadow: 0 0 10px var(--neon-glow, rgba(0,243,255,0.2));
         }
 
         .cta-btn:hover {
@@ -265,171 +572,141 @@
             box-shadow: 0 0 25px var(--neon-cyan);
         }
 
-        footer {
-            text-align: center;
-            padding: 2.5rem 1rem;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(128, 128, 128, 0.15);
-            transition: border 0.8s ease;
-        }
+        footer { text-align: center; padding: 2.5rem 1rem; color: var(--text-muted); font-size: 0.9rem; border-top: 1px solid rgba(128, 128, 128, 0.15); }
 
-        /* ==========================================================================
-           FUN FEATURES & OVERLAYS SYSTEM
-           ========================================================================== */
+        /* Fun Features System */
         .fun-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999;
+            display: none; align-items: center; justify-content: center; padding: 1rem;
         }
 
-        /* Horror Mode Elements */
-        #horror-jumpscare {
-            background: #000;
-        }
-        .jumpscare-creature {
-            font-size: clamp(5rem, 25vw, 10rem);
-            text-shadow: 0 0 40px red;
-            animation: flashShake 0.15s infinite;
-        }
+        #horror-jumpscare { background: #000; }
+        .jumpscare-creature { font-size: clamp(5rem, 25vw, 10rem); text-shadow: 0 0 40px red; animation: flashShake 0.15s infinite; }
         @keyframes flashShake {
             0% { transform: scale(1) translate(4px, -2px); filter: invert(0); }
             50% { transform: scale(1.1) translate(-4px, 3px); filter: invert(0.3); }
             100% { transform: scale(0.95) translate(2px, 2px); filter: invert(0); }
         }
 
-        /* Comedy Mode Elements */
-        #comedy-overlay {
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(4px);
-        }
-        .deadpool-box {
-            background: #1e1e24;
-            border: 3px solid #a600ff;
-            box-shadow: 0 10px 30px rgba(166, 0, 255, 0.3);
-            border-radius: 12px;
-            padding: 1.5rem;
-            max-width: 450px;
-            width: 100%;
-            text-align: center;
-            color: #fff;
-        }
-        .deadpool-img {
-            width: 100%;
-            max-height: 200px;
-            object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-        }
-        .deadpool-btn {
-            background: #e61a22;
-            color: #fff;
-            border: none;
-            padding: 0.6rem 1.5rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 0.25rem;
-            transition: transform 0.2s;
-        }
+        #comedy-overlay { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); }
+        .deadpool-box { background: #1e1e24; border: 3px solid #a600ff; box-shadow: 0 10px 30px rgba(166, 0, 255, 0.3); border-radius: 12px; padding: 1.5rem; max-width: 450px; width: 100%; text-align: center; color: #fff; }
+        .deadpool-img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 6px; margin-bottom: 1rem; }
+        .deadpool-btn { background: #e61a22; color: #fff; border: none; padding: 0.6rem 1.5rem; font-weight: bold; text-transform: uppercase; border-radius: 4px; cursor: pointer; margin: 0.25rem; transition: transform 0.2s; }
         .deadpool-btn:hover { transform: scale(1.05); }
 
-        /* Cyberpunk Dino Game */
-        #cyberpunk-overlay {
-            background: rgba(10, 12, 16, 0.98);
-        }
-        .game-wrapper {
-            background: #121620;
-            border: 2px solid #00f3ff;
-            padding: 1.25rem;
-            border-radius: 8px;
-            text-align: center;
-            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
-            width: 100%;
-            max-width: 500px;
-        }
-        #gameCanvas {
-            background: #0a0c10;
-            border-bottom: 2px solid #00f3ff;
-            display: block;
-            margin: 1rem auto;
-            max-width: 100%;
-            height: auto;
-        }
+        #cyberpunk-overlay { background: rgba(10, 12, 16, 0.98); }
+        .game-wrapper { background: #121620; border: 2px solid #00f3ff; padding: 1.25rem; border-radius: 8px; text-align: center; box-shadow: 0 0 20px rgba(0, 243, 255, 0.2); width: 100%; max-width: 500px; }
+        #gameCanvas { background: #0a0c10; border-bottom: 2px solid #00f3ff; display: block; margin: 1rem auto; max-width: 100%; height: auto; }
 
-        /* Wholesome Break Box */
-        #wholesome-overlay {
-            background: rgba(255, 249, 242, 0.9);
-            backdrop-filter: blur(6px);
-        }
-        .cozy-box {
-            background: #ffffff;
-            border: 2px solid #ff7b9e;
-            border-radius: 16px;
-            padding: 2rem 1.5rem;
-            max-width: 420px;
-            width: 100%;
-            text-align: center;
-            color: #4a3e3d;
-            box-shadow: 0 10px 25px rgba(255, 123, 158, 0.15);
-        }
+        #wholesome-overlay { background: rgba(255, 249, 242, 0.9); backdrop-filter: blur(6px); }
+        .cozy-box { background: #ffffff; border: 2px solid #ff7b9e; border-radius: 16px; padding: 2rem 1.5rem; max-width: 420px; width: 100%; text-align: center; color: #4a3e3d; box-shadow: 0 10px 25px rgba(255, 123, 158, 0.15); }
         .cozy-icon { font-size: 3rem; margin-bottom: 1rem; display: inline-block; animation: float 3s infinite ease-in-out; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         
-        /* Floating Canvas particles */
-        #particleCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            z-index: 10000;
-            display: none;
-            width: 100%;
-            height: 100%;
-        }
+        #particleCanvas { position: fixed; top: 0; left: 0; pointer-events: none; z-index: 10000; display: none; width: 100%; height: 100%; }
 
-        /* Mobile Adjustments */
-        @media (max-width: 480px) {
-            nav {
-                justify-content: center;
-                padding: 1rem;
-            }
-            .nav-links {
-                width: 100%;
-                justify-content: center;
-            }
-            .genre-selector-container {
-                padding-bottom: 1rem;
-            }
-            .card {
-                padding: 1.25rem;
-            }
+        @media (max-width: 600px) {
+            nav { padding: 0.75rem 4%; gap: 0.6rem; flex-wrap: wrap; }
+            .nav-controls { max-width: 100%; order: 3; flex: none; width: 100%; }
+            .nav-right { gap: 0.4rem; }
+            .options-btn, .donate-btn { padding: 0.4rem 0.65rem; font-size: 0.72rem; }
+            .logo-text { font-size: clamp(1rem, 5vw, 1.2rem); }
+            .search-bar { font-size: 0.82rem; }
+            .age-box { padding: 2rem 1.5rem; }
         }
     </style>
 </head>
 <body>
 
-    <nav>
+    <div id="age-verification-overlay" class="age-overlay">
+        <div class="age-box">
+            <h2>Are you 16 plus?</h2>
+            <p style="color: #8b949e; margin-bottom: 1rem; font-size: 0.9rem;">This helps us customize your viewing experience.</p>
+            <div class="age-actions">
+                <button class="cta-btn" onclick="verifyAge(true)">Yes</button>
+                <button class="cta-btn" style="border-color: #ff003c; color: #ff003c;" onclick="verifyAge(false)">No</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal-overlay">
+        <div class="options-modal">
+            <h3>Site Preferences</h3>
+            
+            <div class="option-group">
+                <label class="option-toggle">
+                    <input type="checkbox" id="toggle-fun-features" checked>
+                    Enable Idle Fun Features (Games, Breaks, Events)
+                </label>
+            </div>
+
+            <div class="option-group">
+                <label>Theme Mode</label>
+                <label class="option-toggle" style="margin-bottom: 0.5rem;">
+                    <input type="radio" name="theme-mode" value="dynamic" checked onchange="updateThemeMode()">
+                    Dynamic (Changes with Genres)
+                </label>
+                <label class="option-toggle">
+                    <input type="radio" name="theme-mode" value="custom" onchange="updateThemeMode()">
+                    Custom Fixed Colors
+                </label>
+
+                <div class="color-pickers" id="custom-color-pickers" style="display: none; padding-left: 1.5rem;">
+                    <div class="color-row">
+                        <span>Accent Color</span>
+                        <input type="color" id="color-accent" value="#00f3ff">
+                    </div>
+                    <div class="color-row">
+                        <span>Background Color</span>
+                        <input type="color" id="color-bg" value="#0a0c10">
+                    </div>
+                    <div class="color-row">
+                        <span>Text Color</span>
+                        <input type="color" id="color-text" value="#f0f6fc">
+                    </div>
+                </div>
+            </div>
+
+            <button class="close-modal-btn" onclick="closeSettings()">Save & Close</button>
+        </div>
+    </div>
+
+    <div id="donate-modal" class="modal-overlay">
+        <div class="options-modal" style="text-align:center;">
+            <h3 style="margin-bottom:0.25rem;">☕ Support the Channel</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Every contribution keeps the animation going!</p>
+            <div class="qr-placeholder" id="donate-qr-box">
+                <span id="donate-qr-label">[ Your QR Code Here ]<br><br>Add your QR image<br>to show here</span>
+            </div>
+            <p class="donate-upi-text">Scan QR or tap to copy UPI ID</p>
+            <div class="donate-upi-id" id="donate-upi-id" onclick="copyUpiId()" title="Click to copy">your@upi</div>
+            <p id="copy-confirm" style="font-size:0.78rem; color:#33ff33; height:1rem; margin-bottom:0.5rem; opacity:0; transition:opacity 0.3s;">✓ Copied to clipboard!</p>
+            <button class="close-modal-btn" onclick="closeDonate()">Close</button>
+        </div>
+    </div>
+
+    <nav id="main-nav">
         <div class="logo-text" id="interactive-logo">
             <span id="letter-1">N</span><span id="letter-2">G</span>&nbsp;
             <span class="accent-letter">A</span><span class="accent-letter">N</span><span class="accent-letter">I</span><span class="accent-letter">M</span><span class="accent-letter">A</span><span class="accent-letter">T</span><span class="accent-letter">E</span><span class="accent-letter">S</span>
         </div>
-        <div class="nav-links">
-            <a href="#videos">Videos</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
+        <div class="nav-controls">
+            <div class="search-wrapper">
+                <input type="text" id="video-search" class="search-bar" placeholder="Search videos or projects..." oninput="handleSearch(); toggleClearBtn();">
+                <button class="search-clear-btn" id="search-clear-btn" onclick="clearSearch()" title="Clear search">✕</button>
+                <button class="search-submit-btn" title="Search">🔍</button>
+            </div>
+        </div>
+        <div class="nav-right">
+            <button class="donate-btn" onclick="openDonate()">💛 Donate</button>
+            <button class="options-btn" onclick="openSettings()">⚙ Options</button>
         </div>
     </nav>
 
-    <div class="genre-selector-container" id="genre-selector-bar"></div>
+    <div class="genre-tab-container" id="genre-tab-wrapper">
+        <button class="genre-tab-trigger" id="genre-tab-btn" onclick="toggleGenreDropdown()">Explore Genres ▼</button>
+        <div class="genre-selector-container" id="genre-selector-bar"></div>
+    </div>
 
     <header>
         <h1 class="hero-title" id="hero-heading">Step Into The <span>Unknown</span></h1>
@@ -439,7 +716,7 @@
         
         <div class="video-container" id="videos">
             <div class="video-placeholder" id="video-text">
-                [ Your YouTube Trailer / Latest Video Embed Goes Here ]
+                [ Loading Content... ]
             </div>
         </div>
 
@@ -448,31 +725,13 @@
 
     <h2 class="section-title" id="section-heading">Latest <span>Creations</span></h2>
     <main class="grid-container" id="projects-grid">
-        <div class="card">
-            <span class="card-tag">Project 01</span>
-            <h3>The Midnight Protocol</h3>
-            <p>A look into cinematic style pacing, deep neon drop shadows, and dark cybernetic narrative structures.</p>
-        </div>
-        <div class="card">
-            <span class="card-tag">Project 02</span>
-            <h3>Eclipse Phase</h3>
-            <p>Experimenting with dynamic motion, extreme lighting contrasts, and fluid physics simulation mechanics.</p>
-        </div>
-        <div class="card">
-            <span class="card-tag">Behind The Scenes</span>
-            <h3>The Layout Process</h3>
-            <p>A peek into the dark room. Breaking down custom canvas rendering, timeline syncing, and style design.</p>
-        </div>
-    </main>
+        </main>
 
     <footer>
-        <p>&copy; 2026 NG ANIMATES. All rights reserved.</p>
+        <p>&copy; 2026 NG ANIMATIONS. All rights reserved.</p>
     </footer>
 
-    <div id="horror-jumpscare" class="fun-overlay">
-        <div class="jumpscare-creature">💀</div>
-    </div>
-
+    <div id="horror-jumpscare" class="fun-overlay"><div class="jumpscare-creature">💀</div></div>
     <div id="comedy-overlay" class="fun-overlay">
         <div class="deadpool-box">
             <img id="deadpool-display-img" class="deadpool-img" src="dpshock.jpg" alt="Deadpool">
@@ -483,11 +742,20 @@
             </div>
         </div>
     </div>
-
+    
     <div id="cyberpunk-overlay" class="fun-overlay">
         <div class="game-wrapper">
-            <h3 style="color: #00f3ff; margin-bottom: 0.5rem;">NEON RUNNER v1.0</h3>
-            <p style="font-size: 0.8rem; color: #8b949e; margin-bottom: 0.5rem;">Press [SPACEBAR] or tap screen to Jump. Avoid obstacles.</p>
+            <h3 style="color: #00f3ff; margin-bottom: 0.25rem;">NEON RUNNER: LEVEL 1</h3>
+            <p style="font-size: 0.8rem; color: #8b949e; margin-bottom: 0.2rem;">Theme: Desert Land | Goal: Survive Boss</p>
+            <p style="font-size: 0.8rem; color: #8b949e; margin-bottom: 0.5rem;">Press [SPACEBAR] or tap screen to Jump / Dodge.</p>
+            
+            <div style="margin-bottom: 0.5rem; font-size: 0.85rem;">
+                <label style="color: #8b949e; cursor: pointer;">
+                    Customise Mecha Camo: 
+                    <input type="color" id="mechaColorPicker" value="#727c52" style="vertical-align: middle; background: none; border: none; cursor: pointer; height: 25px;">
+                </label>
+            </div>
+
             <canvas id="gameCanvas" width="480" height="160"></canvas>
             <button class="genre-btn" onclick="closeCyberpunkGame()">Exit Game</button>
         </div>
@@ -502,105 +770,304 @@
             <button class="genre-btn" style="margin-left:0.5rem;" onclick="resetIdleSystem()">Just Browsing</button>
         </div>
     </div>
-
     <canvas id="particleCanvas"></canvas>
 
     <script>
         const logo = document.getElementById('interactive-logo');
-        const letter1 = document.getElementById('letter-1');
-        const letter2 = document.getElementById('letter-2');
         const root = document.documentElement;
         const selectorBar = document.getElementById('genre-selector-bar');
 
         const heroHeading = document.getElementById('hero-heading');
         const heroSubheading = document.getElementById('hero-subheading');
         const sectionHeading = document.getElementById('section-heading');
-        const projectsGrid = document.getElementById('projects-grid');
         const videoContainer = document.getElementById('videos');
+        const projectsGrid = document.getElementById('projects-grid');
+        const searchInput = document.getElementById('video-search');
 
-        // All Genre Profiles
+        let isAdultUser = true;
+        let currentGenreIndex = 0;
+        let isNgLayout = true;
+        let isSearching = false;
+
+        // Settings State
+        let userSettings = JSON.parse(localStorage.getItem('ngSiteSettings')) || {
+            funFeatures: true,
+            themeMode: 'dynamic', 
+            colors: { accent: '#00f3ff', bg: '#0a0c10', text: '#f0f6fc' }
+        };
+
+        // Fully Restored Genres List (18 Items)
         const genres = [
             {
-                name: 'cyberpunk', label: 'Cyberpunk',
+                name: 'cyberpunk', label: 'Cyberpunk', kidsFriendly: false,
                 theme: { '--bg-dark': '#0a0c10', '--bg-card': '#121620', '--neon-cyan': '#00f3ff', '--neon-glow': 'rgba(0, 243, 255, 0.4)', '--text-main': '#f0f6fc', '--text-muted': '#8b949e', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #161b26 0%, #0a0c10 70%)' },
-                content: { isVideo: false, heroTitle: 'Step Into The <span>Unknown</span>', heroSubtitle: 'High-energy visual storytelling, deep atmospheres, and worlds crafted frame by frame. Explore the creative archive.', sectionTitle: 'Latest <span>Creations</span>', videoPlaceholder: '[ Cyberpunk Cinematic Trailer Loop Embed ]', cards: [{ tag: 'Project 01', title: 'The Midnight Protocol', desc: 'A look into cinematic style pacing, deep neon drop shadows, and dark cybernetic narrative structures.' }, { tag: 'Project 02', title: 'Eclipse Phase', desc: 'Experimenting with dynamic motion, extreme lighting contrasts, and fluid physics simulation mechanics.' }, { tag: 'Behind The Scenes', title: 'The Layout Process', desc: 'Breaking down custom canvas rendering, timeline syncing, and heavy asset rendering layouts.' }] }
+                content: { isVideo: false, heroTitle: 'Step Into The <span>Unknown</span>', heroSubtitle: 'High-energy visual storytelling and cybernetic narratives.', sectionTitle: 'Latest <span>Creations</span>', videoPlaceholder: '[ Cyberpunk Cinematic Trailer ]', cards: [{ tag: 'Project 01', title: 'Midnight Protocol', desc: 'Neon drop shadows and dark structures.' }, { tag: 'Project 02', title: 'Eclipse Phase', desc: 'Dynamic motion and physics simulations.' }, { tag: 'BTS', title: 'The Layout', desc: 'Breaking down custom canvas rendering.' }] }
             },
             {
-                name: 'wholesome', label: 'Wholesome',
-                theme: { '--bg-dark': '#fff9f2', '--bg-card': '#ffffff', '--neon-cyan': '#ff7b9e', '--neon-glow': 'rgba(255, 123, 158, 0.3)', '--text-main': '#4a3e3d', '--text-muted': '#8c7a78', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #ffeef2 0%, #fff9f2 70%)' },
-                content: { isVideo: false, heroTitle: 'Welcome to the <span>Comfort Zone</span>', heroSubtitle: 'Soft frames, heartwarming characters, and relaxing slice-of-life animation sketches. Unwind and stay a while.', sectionTitle: 'Cozy <span>Collections</span>', videoPlaceholder: '[ Relaxing Wholesome Lo-Fi Animation Loop Goes Here ]', cards: [{ tag: 'Sketch 01', title: 'Sunday Morning Coffee', desc: 'A gentle exploration of soft focus, warm lighting updates, and casual slice-of-life pacing.' }, { tag: 'Sketch 02', title: 'Fluffy Companions', desc: 'Focusing on organic character lines, bouncy physics transitions, and expressive animal animations.' }, { tag: 'Behind The Scenes', title: 'The Storyboarding Stage', desc: 'Crafting warm narratives, drafting clean layouts, and choosing soft pastel palette harmonies.' }] }
+                name: 'n-genre', label: 'N-Genre', kidsFriendly: false,
+                theme: { '--bg-dark': '#060709', '--bg-card': '#10131a', '--neon-cyan': '#d4af37', '--neon-glow': 'rgba(212, 175, 55, 0.3)', '--text-main': '#f0f6fc', '--text-muted': '#8b949e', '--bg-gradient': 'radial-gradient(circle at 50% 25%, #1a1510 0%, #060709 80%)' },
+                content: { isVideo: true, videoSrc: 'The Chiron_edit.mp4', heroTitle: 'The <span>Chiron</span> Perspective', heroSubtitle: 'Framing high-octane motion profiles, sleek architectural backdrops, and seamless jump-cut edits.', sectionTitle: 'Production <span>Timeline</span>', cards: [{ tag: 'Frame 01', title: 'The Darkness', desc: 'Setting the mood with hidden silhouettes.' }, { tag: 'Frame 02', title: 'Identity Intercept', desc: 'Splicing sharp portrait layouts.' }, { tag: 'Frame 03', title: 'The Gold Standard', desc: 'Concluding with static wide shots.' }] }
             },
             {
-                name: 'horror', label: 'Horror',
+                name: 'horror', label: 'Horror', kidsFriendly: false,
                 theme: { '--bg-dark': '#050505', '--bg-card': '#0d0d0d', '--neon-cyan': '#ff003c', '--neon-glow': 'rgba(255, 0, 60, 0.4)', '--text-main': '#e0e0e0', '--text-muted': '#555555', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #20050b 0%, #050505 80%)' },
-                content: { isVideo: false, heroTitle: 'Do Not Turn <span>Around</span>', heroSubtitle: 'Psychological thrillers, eerie frame manipulation, and liminal space horror. Watch under your own discretion.', sectionTitle: 'Nightmare <span>Logs</span>', videoPlaceholder: '[ Restricted Distorted VHS Tape Broadcast Playback ]', cards: [{ tag: 'Tape 01', title: 'The Static Room', desc: 'Experimenting with artifact glitch layers, analog noise simulation, and subtle jump-scare vector pacing.' }, { tag: 'Tape 02', title: 'Uncanny Valley', desc: 'Deconstructive character modeling that mimics human movement just poorly enough to terrify.' }, { tag: 'Behind The Shadows', title: 'Sound Design Panic', desc: 'How binaural audio spikes and low-frequency ambient drones drastically alter the animation fear engine.' }] }
+                content: { isVideo: false, heroTitle: 'Scary Stories & <span>Monsters</span>', heroSubtitle: 'Psychological thrillers, creepy pasta, and eerie frame manipulation.', sectionTitle: 'Nightmare <span>Logs</span>', videoPlaceholder: '[ Distorted VHS Tape ]', cards: [{ tag: 'Tape 01', title: 'The Static Room', desc: 'Analog noise and jump-scare pacing.' }, { tag: 'Tape 02', title: 'Uncanny Valley', desc: 'Deconstructive character modeling.' }, { tag: 'Sound', title: 'Panic Design', desc: 'Low-frequency ambient drones.' }] }
             },
             {
-                name: 'comedy', label: 'Comedy',
+                name: 'action', label: 'Action & Adventure', kidsFriendly: false,
+                theme: { '--bg-dark': '#1a0d00', '--bg-card': '#261400', '--neon-cyan': '#ff8c00', '--neon-glow': 'rgba(255, 140, 0, 0.4)', '--text-main': '#fff', '--text-muted': '#cca37a', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #402200 0%, #1a0d00 70%)' },
+                content: { isVideo: false, heroTitle: 'Battles & <span>Heroes</span>', heroSubtitle: 'Epic quests, high-stakes battles, and legendary journeys.', sectionTitle: 'Epic <span>Quests</span>', videoPlaceholder: '[ Action sequence montage ]', cards: [{ tag: 'Chapter 1', title: 'The Fall', desc: 'Intense combat choreography.' }, { tag: 'Chapter 2', title: 'Rising Hero', desc: 'Training montage and skill progression.' }, { tag: 'Finale', title: 'The Last Stand', desc: 'Explosive visual effects and pacing.' }] }
+            },
+            {
+                name: 'scifi', label: 'Sci-Fi', kidsFriendly: false,
+                theme: { '--bg-dark': '#001a1a', '--bg-card': '#002626', '--neon-cyan': '#00ffcc', '--neon-glow': 'rgba(0, 255, 204, 0.4)', '--text-main': '#e6ffff', '--text-muted': '#80cccc', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #004d4d 0%, #001a1a 70%)' },
+                content: { isVideo: false, heroTitle: 'Futuristic <span>Settings</span>', heroSubtitle: 'Robots, aliens, and deep space exploration narratives.', sectionTitle: 'Stellar <span>Logs</span>', videoPlaceholder: '[ Space Station establishing shot ]', cards: [{ tag: 'Log 01', title: 'First Contact', desc: 'Alien character designs.' }, { tag: 'Log 02', title: 'Hyperdrive', desc: 'Warp speed light trails.' }, { tag: 'Tech', title: 'Mecha Build', desc: 'Hard-surface robot rigging.' }] }
+            },
+            {
+                name: 'mystery', label: 'Mystery & Thriller', kidsFriendly: false,
+                theme: { '--bg-dark': '#1a1a1a', '--bg-card': '#262626', '--neon-cyan': '#b3b3b3', '--neon-glow': 'rgba(179, 179, 179, 0.4)', '--text-main': '#fff', '--text-muted': '#999', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #333 0%, #1a1a1a 70%)' },
+                content: { isVideo: false, heroTitle: 'Suspense & <span>Detectives</span>', heroSubtitle: 'Unraveling the truth one frame at a time.', sectionTitle: 'Case <span>Files</span>', videoPlaceholder: '[ Noir detective scene ]', cards: [{ tag: 'Clue 1', title: 'The Shadow', desc: 'High contrast black and white rendering.' }, { tag: 'Clue 2', title: 'Footprints', desc: 'Subtle environmental storytelling.' }, { tag: 'Reveal', title: 'The Plot Twist', desc: 'Dynamic camera angles for suspense.' }] }
+            },
+            {
+                name: 'drama', label: 'Drama', kidsFriendly: false,
+                theme: { '--bg-dark': '#1a0d16', '--bg-card': '#261421', '--neon-cyan': '#ff0066', '--neon-glow': 'rgba(255, 0, 102, 0.4)', '--text-main': '#ffe6f2', '--text-muted': '#cc99b3', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #4d1a33 0%, #1a0d16 70%)' },
+                content: { isVideo: false, heroTitle: 'Emotional <span>Stories</span>', heroSubtitle: 'Relationship-based narratives and deep character studies.', sectionTitle: 'Tear <span>Jerkers</span>', videoPlaceholder: '[ Emotional character monologue ]', cards: [{ tag: 'Act 1', title: 'The Argument', desc: 'Expressive facial animation focus.' }, { tag: 'Act 2', title: 'The Distance', desc: 'Pacing and deliberate silence.' }, { tag: 'Act 3', title: 'Reconciliation', desc: 'Warm color grading techniques.' }] }
+            },
+            {
+                name: 'romance', label: 'Romance', kidsFriendly: false,
+                theme: { '--bg-dark': '#2a0014', '--bg-card': '#400020', '--neon-cyan': '#ff3385', '--neon-glow': 'rgba(255, 51, 133, 0.4)', '--text-main': '#fff', '--text-muted': '#cc80a3', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #660033 0%, #2a0014 70%)' },
+                content: { isVideo: false, heroTitle: 'Love & <span>Comedy</span>', heroSubtitle: 'Romantic comedies, love stories, and meet-cutes.', sectionTitle: 'Heart <span>Strings</span>', videoPlaceholder: '[ Romantic sunset scene ]', cards: [{ tag: 'Meet', title: 'The Collision', desc: 'Slow motion and particle effects.' }, { tag: 'Date', title: 'Awkward Silence', desc: 'Comedic timing and blushing mechanics.' }, { tag: 'End', title: 'The Kiss', desc: 'Sweeping camera rotation mechanics.' }] }
+            },
+            {
+                name: 'kids', label: 'Kids', kidsFriendly: true,
+                theme: { '--bg-dark': '#002244', '--bg-card': '#003366', '--neon-cyan': '#00ff00', '--neon-glow': 'rgba(0, 255, 0, 0.4)', '--text-main': '#fff', '--text-muted': '#b3d9ff', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #004080 0%, #002244 70%)' },
+                content: { isVideo: false, heroTitle: 'Fun for <span>Everyone</span>', heroSubtitle: 'Bright colors, fun characters, and safe adventures!', sectionTitle: 'Play <span>Time</span>', videoPlaceholder: '[ Colorful Kids Animation Loop ]', cards: [{ tag: 'Song', title: 'The Alphabet Dance', desc: 'Bouncy, colorful letters in motion.' }, { tag: 'Game', title: 'Hide and Seek', desc: 'Interactive character expressions.' }, { tag: 'Story', title: 'The Brave Little Turtle', desc: 'Simple shapes and clear storytelling.' }] }
+            },
+            {
+                name: 'wholesome', label: 'Wholesome', kidsFriendly: true,
+                theme: { '--bg-dark': '#fff9f2', '--bg-card': '#ffffff', '--neon-cyan': '#ff7b9e', '--neon-glow': 'rgba(255, 123, 158, 0.3)', '--text-main': '#4a3e3d', '--text-muted': '#8c7a78', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #ffeef2 0%, #fff9f2 70%)' },
+                content: { isVideo: false, heroTitle: 'Welcome to the <span>Comfort Zone</span>', heroSubtitle: 'Soft frames and heartwarming characters. Stay a while.', sectionTitle: 'Cozy <span>Collections</span>', videoPlaceholder: '[ Relaxing Wholesome Animation ]', cards: [{ tag: 'Sketch 01', title: 'Morning Coffee', desc: 'Warm lighting updates.' }, { tag: 'Sketch 02', title: 'Fluffy Companions', desc: 'Expressive animal animations.' }, { tag: 'BTS', title: 'Storyboarding', desc: 'Drafting clean layouts.' }] }
+            },
+            {
+                name: 'comedy', label: 'Comedy', kidsFriendly: true,
                 theme: { '--bg-dark': '#1a0b2e', '--bg-card': '#2d144d', '--neon-cyan': '#a600ff', '--neon-glow': 'rgba(166, 0, 255, 0.4)', '--text-main': '#fdf6ff', '--text-muted': '#a78cbf', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #3e1259 0%, #1a0b2e 70%)' },
-                content: { isVideo: false, heroTitle: 'Expect The <span>Absurd</span>', heroSubtitle: 'Squash-and-stretch turned up to eleven. Hilarious parodies, expressive faces, and pure comedic timing.', sectionTitle: 'Gag <span>Archive</span>', videoPlaceholder: '[ Warning: Do Not Drink Liquids While Watching This Skit Loop ]', cards: [{ tag: 'Episode 01', title: 'Physics Has Left The Chat', desc: 'Breaking every known animation structural rule just to land a ridiculous visual punchline.' }, { tag: 'Episode 02', title: 'Extreme Face Inversions', desc: 'A deep dive into micro-expression exaggeration tactics for maximum unexpected shock value.' }, { tag: 'Behind The Laughs', title: 'Timing The Punchline', desc: 'Analyzing the frame gap math needed between setup, anticipation, and final visual payoff.' }] }
+                content: { isVideo: false, heroTitle: 'Funny Skits & <span>Parodies</span>', heroSubtitle: 'Memes, squash-and-stretch, and hilarious setups.', sectionTitle: 'Gag <span>Archive</span>', videoPlaceholder: '[ Slapstick Comedy Routine ]', cards: [{ tag: 'Episode 1', title: 'Physics Left Chat', desc: 'Breaking visual structural rules.' }, { tag: 'Episode 2', title: 'Face Inversions', desc: 'Exaggeration tactics.' }, { tag: 'BTS', title: 'Punchline Math', desc: 'Analyzing the frame gap.' }] }
             },
             {
-                name: 'n-genre', label: 'N-Genre',
-                theme: { 
-                    '--bg-dark': '#060709', 
-                    '--bg-card': '#10131a', 
-                    '--neon-cyan': '#d4af37', 
-                    '--neon-glow': 'rgba(212, 175, 55, 0.3)', 
-                    '--text-main': '#f0f6fc', 
-                    '--text-muted': '#8b949e', 
-                    '--bg-gradient': 'radial-gradient(circle at 50% 25%, #1a1510 0%, #060709 80%)' 
-                },
-                content: { 
-                    isVideo: true, 
-                    videoSrc: 'The Chiron_edit.mp4', 
-                    heroTitle: 'The <span>Chiron</span> Perspective', 
-                    heroSubtitle: 'Framing high-octane motion profiles, sleek architectural backdrops, and seamless jump-cut edits into a singular workflow.', 
-                    sectionTitle: 'Production <span>Timeline</span>', 
-                    cards: [
-                        { tag: 'Frame 01 - Intro', title: 'The Darkness', desc: 'Setting the mood with hidden silhouettes, aggressive red backlighting, and heavy sub-bass transitions.' }, 
-                        { tag: 'Frame 02 - Core Edit', title: 'Identity Intercept', desc: 'Splicing sharp portrait layouts directly into fast panning sequences to anchor character presence.' }, 
-                        { tag: 'Frame 03 - Outro', title: 'The Gold Standard', desc: 'Concluding with static wide shots, deep shadows, and an ultra-premium final stance contrast alignment.' }
-                    ] 
-                }
+                name: 'storytime', label: 'Storytime', kidsFriendly: true,
+                theme: { '--bg-dark': '#1a1d24', '--bg-card': '#252a34', '--neon-cyan': '#ffcf54', '--neon-glow': 'rgba(255, 207, 84, 0.4)', '--text-main': '#f0f6fc', '--text-muted': '#8b949e', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #303643 0%, #1a1d24 70%)' },
+                content: { isVideo: false, heroTitle: 'Personal <span>Experiences</span>', heroSubtitle: 'Animated stories from real life, narrated directly to you.', sectionTitle: 'Life <span>Stories</span>', videoPlaceholder: '[ Animator speaking into microphone ]', cards: [{ tag: 'Vlog 1', title: 'My First Day', desc: 'Lip-syncing and persona acting.' }, { tag: 'Vlog 2', title: 'The Big Mistake', desc: 'Using visual metaphors for emotions.' }, { tag: 'Style', title: 'Animatic Look', desc: 'Keeping it sketchy but expressive.' }] }
+            },
+            {
+                name: 'fantasy', label: 'Fantasy', kidsFriendly: true,
+                theme: { '--bg-dark': '#0d1a0d', '--bg-card': '#1a331a', '--neon-cyan': '#33ff33', '--neon-glow': 'rgba(51, 255, 51, 0.4)', '--text-main': '#e6ffe6', '--text-muted': '#80cc80', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #264d26 0%, #0d1a0d 70%)' },
+                content: { isVideo: false, heroTitle: 'Magic & <span>Mythical</span>', heroSubtitle: 'Fictional worlds, dragons, and mystical creatures.', sectionTitle: 'Enchanted <span>Realms</span>', videoPlaceholder: '[ Dragon flying over castle ]', cards: [{ tag: 'Spell 1', title: 'The Summoning', desc: 'Particle magic effects.' }, { tag: 'Creature', title: 'Griffin Flight', desc: 'Wing cycle mechanics.' }, { tag: 'World', title: 'The Crystal Cave', desc: 'Refractive lighting materials.' }] }
+            },
+            {
+                name: 'slice', label: 'Slice of Life', kidsFriendly: true,
+                theme: { '--bg-dark': '#1a1a00', '--bg-card': '#333300', '--neon-cyan': '#ffff33', '--neon-glow': 'rgba(255, 255, 51, 0.4)', '--text-main': '#ffffe6', '--text-muted': '#cccc80', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #4d4d00 0%, #1a1a00 70%)' },
+                content: { isVideo: false, heroTitle: 'Everyday <span>Situations</span>', heroSubtitle: 'Relatable content about the mundane beauty of life.', sectionTitle: 'Daily <span>Vlogs</span>', videoPlaceholder: '[ Character waiting for the bus ]', cards: [{ tag: 'Morning', title: 'The Alarm Clock', desc: 'Tired character posing.' }, { tag: 'Commute', title: 'Rainy Window', desc: 'Subtle atmospheric looping.' }, { tag: 'Evening', title: 'Dinner Time', desc: 'Food rendering and steam physics.' }] }
+            },
+            {
+                name: 'moral', label: 'Moral Stories', kidsFriendly: true,
+                theme: { '--bg-dark': '#1a0a00', '--bg-card': '#331400', '--neon-cyan': '#ff6600', '--neon-glow': 'rgba(255, 102, 0, 0.4)', '--text-main': '#ffe6d9', '--text-muted': '#cc8f66', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #4d1f00 0%, #1a0a00 70%)' },
+                content: { isVideo: false, heroTitle: 'Stories & <span>Fables</span>', heroSubtitle: 'Timeless tales teaching valuable life lessons.', sectionTitle: 'Classic <span>Tales</span>', videoPlaceholder: '[ The Tortoise and the Hare ]', cards: [{ tag: 'Fable 1', title: 'The Ant and Grasshopper', desc: 'Character contrast.' }, { tag: 'Fable 2', title: 'The Lion and Mouse', desc: 'Scale and proportion staging.' }, { tag: 'Lesson', title: 'Honesty', desc: 'Clear narrative arcs.' }] }
+            },
+            {
+                name: 'educational', label: 'Educational', kidsFriendly: true,
+                theme: { '--bg-dark': '#001433', '--bg-card': '#002966', '--neon-cyan': '#3385ff', '--neon-glow': 'rgba(51, 133, 255, 0.4)', '--text-main': '#e6f0ff', '--text-muted': '#80b3ff', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #003d99 0%, #001433 70%)' },
+                content: { isVideo: false, heroTitle: 'Learn & <span>Grow</span>', heroSubtitle: 'Factual, easy-to-understand science, math, and history.', sectionTitle: 'Brain <span>Power</span>', videoPlaceholder: '[ Solar System infographic ]', cards: [{ tag: 'Science', title: 'Water Cycle', desc: 'Infographic motion design.' }, { tag: 'Math', title: 'Fractions', desc: 'Visualizing numbers clearly.' }, { tag: 'History', title: 'Ancient Egypt', desc: 'Stylized historical reenactment.' }] }
+            },
+            {
+                name: '3d', label: '3D Animation', kidsFriendly: true,
+                theme: { '--bg-dark': '#140033', '--bg-card': '#290066', '--neon-cyan': '#8533ff', '--neon-glow': 'rgba(133, 51, 255, 0.4)', '--text-main': '#f0e6ff', '--text-muted': '#b380ff', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #3d0099 0%, #140033 70%)' },
+                content: { isVideo: false, heroTitle: 'Pixar-Style <span>CGI</span>', heroSubtitle: 'Fully rendered 3D environments and textured characters.', sectionTitle: 'Render <span>Farm</span>', videoPlaceholder: '[ 3D Character Turntable ]', cards: [{ tag: 'Lighting', title: 'Global Illumination', desc: 'Baking light maps.' }, { tag: 'Rigging', title: 'Facial Controls', desc: 'Blend shapes for expressions.' }, { tag: 'Texture', title: 'Subsurface Scattering', desc: 'Making skin look alive.' }] }
+            },
+            {
+                name: '2d', label: '2D Animation', kidsFriendly: true,
+                theme: { '--bg-dark': '#222', '--bg-card': '#333', '--neon-cyan': '#fff', '--neon-glow': 'rgba(255, 255, 255, 0.4)', '--text-main': '#eee', '--text-muted': '#aaa', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #444 0%, #222 70%)' },
+                content: { isVideo: false, heroTitle: 'Traditional <span>Hand-Drawn</span>', heroSubtitle: 'Frame-by-frame digital and traditional 2D artistry.', sectionTitle: 'On The <span>Ones</span>', videoPlaceholder: '[ Pencil test loop ]', cards: [{ tag: 'Roughs', title: 'Tie-Downs', desc: 'Cleaning up the messy lines.' }, { tag: 'Color', title: 'Flatting', desc: 'Efficient bucket filling techniques.' }, { tag: 'Timing', title: 'Spacing Charts', desc: 'Controlling the speed of arcs.' }] }
+            },
+            {
+                name: 'shorts', label: 'Short Films', kidsFriendly: true,
+                theme: { '--bg-dark': '#0a0a0a', '--bg-card': '#1a1a1a', '--neon-cyan': '#ffcc00', '--neon-glow': 'rgba(255, 204, 0, 0.4)', '--text-main': '#fff', '--text-muted': '#ccaa00', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #333 0%, #0a0a0a 70%)' },
+                content: { isVideo: false, heroTitle: 'Festival <span>Shorts</span>', heroSubtitle: 'Self-contained stories wrapped up in under 10 minutes.', sectionTitle: 'Screening <span>Room</span>', videoPlaceholder: '[ Award-winning short trailer ]', cards: [{ tag: 'Film 1', title: 'The Wanderer', desc: 'Silent storytelling.' }, { tag: 'Film 2', title: 'Paper Planes', desc: 'Mixed media approach.' }, { tag: 'Credits', title: 'The Team', desc: 'Managing a small indie pipeline.' }] }
+            },
+            {
+                name: 'series', label: 'Series', kidsFriendly: true,
+                theme: { '--bg-dark': '#140000', '--bg-card': '#290000', '--neon-cyan': '#ff3333', '--neon-glow': 'rgba(255, 51, 51, 0.4)', '--text-main': '#ffe6e6', '--text-muted': '#cc8080', '--bg-gradient': 'radial-gradient(circle at 50% 20%, #4d0000 0%, #140000 70%)' },
+                content: { isVideo: false, heroTitle: 'Episodic <span>Content</span>', heroSubtitle: 'Follow the ongoing adventures week by week.', sectionTitle: 'Watch <span>Now</span>', videoPlaceholder: '[ Series Intro Theme ]', cards: [{ tag: 'S1 E1', title: 'The Beginning', desc: 'Establishing the universe.' }, { tag: 'S1 E2', title: 'New Friends', desc: 'Character introductions.' }, { tag: 'S1 E3', title: 'The Conflict', desc: 'Raising the stakes.' }] }
             }
         ];
 
-        let currentGenreIndex = 0;
-        let isNgLayout = true; 
+        window.onload = () => {
+            document.getElementById('age-verification-overlay').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; 
+            applyLoadedSettings();
+        };
 
-        // Generate Genre Buttons
-        genres.forEach((genre, index) => {
-            const btn = document.createElement('button');
-            btn.className = `genre-btn ${index === 0 ? 'active' : ''}`;
-            btn.textContent = genre.label;
-            btn.setAttribute('data-index', index);
-            btn.addEventListener('click', () => {
-                if(currentGenreIndex === index) return;
-                currentGenreIndex = index;
+        function verifyAge(isAdult) {
+            isAdultUser = isAdult;
+            document.getElementById('age-verification-overlay').style.display = 'none';
+            document.body.style.overflow = ''; 
+
+            if (!isAdultUser) {
+                logo.innerHTML = '<span id="letter-1" class="accent-letter">N</span><span id="letter-2" class="accent-letter">G</span>&nbsp;<span class="accent-letter">A</span><span class="accent-letter">N</span><span class="accent-letter">I</span><span class="accent-letter">M</span><span class="accent-letter">A</span><span class="accent-letter">T</span><span class="accent-letter">I</span><span class="accent-letter">O</span><span class="accent-letter">N</span><span class="accent-letter">S</span>&nbsp;<span class="accent-letter">K</span><span class="accent-letter">I</span><span class="accent-letter">D</span><span class="accent-letter">S</span>';
+                document.title = "NG ANIMATIONS KIDS | Official Channel";
+            }
+            renderGenresBar();
+        }
+
+        // ==========================================
+        // SETTINGS & THEME LOGIC
+        // ==========================================
+        function applyLoadedSettings() {
+            document.getElementById('toggle-fun-features').checked = userSettings.funFeatures;
+            document.querySelector(`input[name="theme-mode"][value="${userSettings.themeMode}"]`).checked = true;
+            document.getElementById('color-accent').value = userSettings.colors.accent;
+            document.getElementById('color-bg').value = userSettings.colors.bg;
+            document.getElementById('color-text').value = userSettings.colors.text;
+            updateThemeMode();
+        }
+
+        function openSettings() {
+            document.getElementById('settings-modal').style.display = 'flex';
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').style.display = 'none';
+            userSettings.funFeatures = document.getElementById('toggle-fun-features').checked;
+            userSettings.themeMode = document.querySelector('input[name="theme-mode"]:checked').value;
+            userSettings.colors = {
+                accent: document.getElementById('color-accent').value,
+                bg: document.getElementById('color-bg').value,
+                text: document.getElementById('color-text').value
+            };
+            localStorage.setItem('ngSiteSettings', JSON.stringify(userSettings));
+            
+            resetIdleSystem(); 
+            if(!isSearching) triggerTransition(genres[currentGenreIndex]); 
+            else enforceCustomTheme(); 
+        }
+
+        function updateThemeMode() {
+            const isCustom = document.querySelector('input[name="theme-mode"]:checked').value === 'custom';
+            document.getElementById('custom-color-pickers').style.display = isCustom ? 'flex' : 'none';
+        }
+
+        function enforceCustomTheme() {
+            if (userSettings.themeMode === 'custom') {
+                root.style.setProperty('--neon-cyan', userSettings.colors.accent);
+                root.style.setProperty('--bg-dark', userSettings.colors.bg);
+                root.style.setProperty('--text-main', userSettings.colors.text);
+                // Subdued derivates for legibility
+                root.style.setProperty('--neon-glow', userSettings.colors.accent + '66'); // 40% opacity
+                root.style.setProperty('--bg-card', userSettings.colors.bg);
+                root.style.setProperty('--bg-gradient', `radial-gradient(circle at 50% 20%, ${userSettings.colors.bg} 0%, #000 100%)`);
+            }
+        }
+
+        // ==========================================
+        // SEARCH LOGIC
+        // ==========================================
+        function handleSearch() {
+            const query = searchInput.value.toLowerCase().trim();
+            if (query.length === 0) {
+                isSearching = false;
+                document.getElementById('genre-tab-wrapper').style.display = 'block';
                 triggerTransition(genres[currentGenreIndex]);
-            });
-            selectorBar.appendChild(btn);
-        });
+                return;
+            }
 
-        logo.addEventListener('click', () => {
-            currentGenreIndex = (currentGenreIndex + 1) % genres.length;
-            triggerTransition(genres[currentGenreIndex]);
-        });
+            isSearching = true;
+            document.getElementById('genre-tab-wrapper').style.display = 'none';
+            heroHeading.innerHTML = `Search Results for <span>"${query}"</span>`;
+            heroSubheading.textContent = "Projects matching your query across all available archives.";
+            sectionHeading.innerHTML = `Matching <span>Files</span>`;
+            
+            videoContainer.innerHTML = `<div class="video-placeholder" id="video-text">[ Searching Archives... ]</div>`;
+            projectsGrid.innerHTML = '';
+
+            let matchCount = 0;
+
+            genres.forEach(genre => {
+                if (!isAdultUser && !genre.kidsFriendly) return;
+
+                genre.content.cards.forEach(card => {
+                    if (card.title.toLowerCase().includes(query) || card.desc.toLowerCase().includes(query) || card.tag.toLowerCase().includes(query)) {
+                        matchCount++;
+                        projectsGrid.innerHTML += `
+                            <div class="card">
+                                <span class="card-tag">${card.tag} (${genre.label})</span>
+                                <h3>${card.title}</h3>
+                                <p>${card.desc}</p>
+                            </div>
+                        `;
+                    }
+                });
+            });
+
+            if (matchCount === 0) {
+                projectsGrid.innerHTML = `<p style="color: var(--text-muted); text-align:center; width:100%;">No matches found.</p>`;
+            }
+        }
+
+        // ==========================================
+        // NAVIGATION & CONTENT LOADING
+        // ==========================================
+        function toggleGenreDropdown() {
+            selectorBar.classList.toggle('open');
+            document.getElementById('genre-tab-btn').textContent = selectorBar.classList.contains('open') ? 'Hide Genres ▲' : 'Explore Genres ▼';
+        }
+
+        function renderGenresBar() {
+            selectorBar.innerHTML = '';
+            let firstValidIndex = -1;
+
+            genres.forEach((genre, index) => {
+                if (!isAdultUser && !genre.kidsFriendly) return; 
+                if (firstValidIndex === -1) firstValidIndex = index;
+
+                const btn = document.createElement('button');
+                btn.className = `genre-btn`;
+                btn.textContent = genre.label;
+                btn.setAttribute('data-index', index);
+                btn.addEventListener('click', () => {
+                    if(currentGenreIndex === index) return;
+                    currentGenreIndex = index;
+                    triggerTransition(genres[currentGenreIndex]);
+                });
+                selectorBar.appendChild(btn);
+            });
+
+            if (firstValidIndex !== -1) {
+                currentGenreIndex = firstValidIndex;
+                triggerTransition(genres[currentGenreIndex]);
+            }
+        }
 
         function triggerTransition(targetGenre) {
+            if(isSearching) return; // Prevent overwriting search view
             logo.classList.add('scattered');
             setTimeout(() => {
-                if (isNgLayout) { letter1.textContent = 'G'; letter2.textContent = 'N'; } 
-                else { letter1.textContent = 'N'; letter2.textContent = 'G'; }
-                isNgLayout = !isNgLayout;
+                if(isAdultUser) {
+                    if (isNgLayout) { document.getElementById('letter-1').textContent = 'G'; document.getElementById('letter-2').textContent = 'N'; } 
+                    else { document.getElementById('letter-1').textContent = 'N'; document.getElementById('letter-2').textContent = 'G'; }
+                    isNgLayout = !isNgLayout;
+                }
 
-                Object.keys(targetGenre.theme).forEach(key => { root.style.setProperty(key, targetGenre.theme[key]); });
+                // Apply dynamic theme or force custom theme
+                if (userSettings.themeMode === 'dynamic') {
+                    Object.keys(targetGenre.theme).forEach(key => { root.style.setProperty(key, targetGenre.theme[key]); });
+                } else {
+                    enforceCustomTheme();
+                }
+
                 updateWebsiteContent(targetGenre.content);
 
                 const allButtons = selectorBar.querySelectorAll('.genre-btn');
-                allButtons.forEach((btn, idx) => {
-                    if(idx === currentGenreIndex) btn.classList.add('active');
+                allButtons.forEach((btn) => {
+                    if(parseInt(btn.getAttribute('data-index')) === currentGenreIndex) btn.classList.add('active');
                     else btn.classList.remove('active');
                 });
                 logo.classList.remove('scattered');
@@ -613,30 +1080,33 @@
             heroSubheading.textContent = content.heroSubtitle;
             sectionHeading.innerHTML = content.sectionTitle;
 
-            // Handle switching between dynamic video player and textual placeholder
             if (content.isVideo) {
                 videoContainer.innerHTML = `<video src="${content.videoSrc}" controls autoplay loop muted playsinline></video>`;
                 const videoEl = videoContainer.querySelector('video');
-                videoEl.onplay = () => { isVideoPlaying = true; clearTimeout(idleTimer); };
-                videoEl.onpause = () => { isVideoPlaying = false; resetIdleSystem(); };
+                if(videoEl) {
+                    videoEl.onplay = () => { isVideoPlaying = true; clearTimeout(idleTimer); };
+                    videoEl.onpause = () => { isVideoPlaying = false; resetIdleSystem(); };
+                }
             } else {
                 isVideoPlaying = false;
                 videoContainer.innerHTML = `<div class="video-placeholder" id="video-text">${content.videoPlaceholder}</div>`;
             }
 
-            const cards = projectsGrid.querySelectorAll('.card');
-            content.cards.forEach((data, index) => {
-                if(cards[index]) {
-                    cards[index].querySelector('.card-tag').textContent = data.tag;
-                    cards[index].querySelector('h3').textContent = data.title;
-                    cards[index].querySelector('p').textContent = data.desc;
-                }
+            projectsGrid.innerHTML = '';
+            content.cards.forEach((data) => {
+                projectsGrid.innerHTML += `
+                    <div class="card">
+                        <span class="card-tag">${data.tag}</span>
+                        <h3>${data.title}</h3>
+                        <p>${data.desc}</p>
+                    </div>
+                `;
             });
         }
 
-        // ==========================================================================
-        // IDLE MANAGEMENT SYSTEM (10 Seconds Tracker)
-        // ==========================================================================
+        // ==========================================
+        // IDLE MANAGEMENT SYSTEM (FUN FEATURES)
+        // ==========================================
         let idleTimer;
         let isFeatureActive = false;
         let isVideoPlaying = false; 
@@ -646,18 +1116,17 @@
             isFeatureActive = false;
             
             clearTimeout(idleTimer);
-            if (!isVideoPlaying) {
+            if (!isVideoPlaying && userSettings.funFeatures && !isSearching) {
                 idleTimer = setTimeout(triggerFunFeature, 10000); 
             }
         }
 
         ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach(evt => {
-            window.addEventListener(evt, () => {
-                if (!isFeatureActive) resetIdleSystem();
-            }, { passive: true });
+            window.addEventListener(evt, () => { if (!isFeatureActive) resetIdleSystem(); }, { passive: true });
         });
 
         function triggerFunFeature() {
+            if (!userSettings.funFeatures || isSearching) return;
             isFeatureActive = true;
             const currentGenre = genres[currentGenreIndex].name;
 
@@ -678,96 +1147,256 @@
             else if (currentGenre === 'wholesome') {
                 document.getElementById('wholesome-overlay').style.display = 'flex';
             }
-            else if (currentGenre === 'n-genre') {
+            else {
                 isFeatureActive = false;
             }
         }
 
-        // Comedy Mode Action Chain
         function advanceComedy() {
             document.getElementById('deadpool-display-img').src = 'dpbduck.jpg'; 
-            document.getElementById('deadpool-text').textContent = "Taking you right back to where you left off...";
+            document.getElementById('deadpool-text').textContent = "Taking you right back...";
             document.getElementById('comedy-actions').style.display = 'none';
             setTimeout(resetIdleSystem, 2500);
         }
 
-        // Cyberpunk Runner Game Engine Implementation
+        // ==========================================
+        // NEON RUNNER: LEVEL 1 (DESERT MECHA)
+        // ==========================================
         let gameAnimationId;
         let isGameRunning = false;
 
         function startCyberpunkGame() {
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
+            const colorPicker = document.getElementById('mechaColorPicker');
             isGameRunning = true;
             
-            let player = { x: 30, y: 110, w: 20, h: 30, dy: 0, grounded: true };
+            // Core Game Entities
+            let player = { x: 30, y: 110, w: 20, h: 30, dy: 0, grounded: true, hasGun: false };
             let obstacles = [];
+            let bullets = [];
+            let pBullets = [];
+            let boss = { active: false, x: 500, y: 60, w: 60, h: 80, dodges: 0, exploded: false };
+            
             let gameScore = 0;
             let frameCount = 0;
+            let phase = 1; // 1 = Runner (35 blocks), 2 = Boss (20 dodges), 3 = Win
+            let highscoreTracker = parseInt(localStorage.getItem('neonRunnerHighScore')) || 0;
 
             function spawnObstacle() {
-                obstacles.push({ x: 480, y: 120, w: 15, h: 20 });
+                if (phase !== 1) return;
+                let isFlying = Math.random() > 0.5;
+                if (isFlying) {
+                    obstacles.push({ type: 'vulture', x: 480, y: 70, w: 25, h: 15 });
+                } else {
+                    obstacles.push({ type: 'block', x: 480, y: 120, w: 20, h: 20 });
+                }
+            }
+
+            function spawnBossBullet() {
+                if (phase === 2 && !boss.exploded) {
+                    bullets.push({ x: boss.x, y: boss.y + 40, w: 12, h: 6, speed: 6, dodged: false });
+                }
+            }
+
+            function resetGameLevel() {
+                gameScore = 0;
+                obstacles = [];
+                bullets = [];
+                pBullets = [];
+                boss = { active: false, x: 500, y: 60, w: 60, h: 80, dodges: 0, exploded: false };
+                phase = 1;
+                player.hasGun = false;
+                player.y = 110;
+                player.dy = 0;
+                player.grounded = true;
+            }
+
+            function updateHighScore() {
+                if (gameScore > highscoreTracker) {
+                    highscoreTracker = gameScore;
+                    localStorage.setItem('neonRunnerHighScore', highscoreTracker);
+                }
             }
 
             function updateGame() {
                 if(!isGameRunning) return;
                 frameCount++;
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 1. Draw Map (Desert Theme)
+                ctx.fillStyle = '#eebd8b'; // Desert Sky
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#c18953'; // Desert Ground
+                ctx.fillRect(0, 140, canvas.width, 20);
 
+                // Sun Detail
+                ctx.fillStyle = '#ffcc00';
+                ctx.beginPath();
+                ctx.arc(400, 40, 20, 0, Math.PI * 2);
+                ctx.fill();
+
+                // 2. Player Physics
                 if (!player.grounded) {
                     player.dy += 0.6;
                     player.y += player.dy;
-                    if (player.y >= 110) {
-                        player.y = 110;
-                        player.dy = 0;
-                        player.grounded = true;
-                    }
+                    if (player.y >= 110) { player.y = 110; player.dy = 0; player.grounded = true; }
                 }
 
-                ctx.fillStyle = '#00f3ff';
+                // 3. Draw Player (Customizable Mecha Scout)
+                ctx.fillStyle = colorPicker.value; // Driven by HTML color picker
                 ctx.fillRect(player.x, player.y, player.w, player.h);
+                // Mecha details
+                ctx.fillStyle = '#00f3ff'; // Glowing eye
+                ctx.fillRect(player.x + 12, player.y + 6, 6, 4);
+                ctx.fillStyle = '#222'; // Tracks/wheels
+                ctx.fillRect(player.x - 2, player.y + 25, 24, 5);
+                
+                if (player.hasGun) {
+                    ctx.fillStyle = '#444';
+                    ctx.fillRect(player.x + 15, player.y + 12, 18, 6); // Gun barrel
+                }
 
-                if (frameCount % 90 === 0) spawnObstacle();
+                // 4. Phase 1 Logic (Runner & Vultures)
+                if (phase === 1) {
+                    if (frameCount % 75 === 0) spawnObstacle();
+                    
+                    if (gameScore >= 35) {
+                        phase = 2; // Trigger Boss Phase
+                        boss.active = true;
+                    }
+                }
 
                 for (let i = obstacles.length - 1; i >= 0; i--) {
-                    obstacles[i].x -= 4;
-                    ctx.fillStyle = '#ff003c';
-                    ctx.fillRect(obstacles[i].x, obstacles[i].y, obstacles[i].w, obstacles[i].h);
-
-                    if (player.x < obstacles[i].x + obstacles[i].w &&
-                        player.x + player.w > obstacles[i].x &&
-                        player.y < obstacles[i].y + obstacles[i].h &&
-                        player.y + player.h > obstacles[i].y) {
-                        gameScore = 0;
-                        obstacles = [];
+                    let obs = obstacles[i];
+                    obs.x -= 4.5;
+                    
+                    if (obs.type === 'vulture') {
+                        // Draw Mecha Vulture
+                        ctx.fillStyle = '#555';
+                        ctx.beginPath();
+                        ctx.moveTo(obs.x, obs.y + obs.h/2);
+                        ctx.lineTo(obs.x + obs.w, obs.y);
+                        ctx.lineTo(obs.x + obs.w, obs.y + obs.h);
+                        ctx.fill();
+                        ctx.fillStyle = '#ff003c'; // red vulture eye
+                        ctx.fillRect(obs.x + 5, obs.y + 5, 4, 4);
+                    } else {
+                        // Draw Sand block / Tank
+                        ctx.fillStyle = '#8b4513';
+                        ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
                     }
 
-                    if (obstacles[i] && obstacles[i].x < -20) {
+                    // Collision
+                    if (player.x < obs.x + obs.w && player.x + player.w > obs.x && player.y < obs.y + obs.h && player.y + player.h > obs.y) {
+                        resetGameLevel();
+                    }
+
+                    // Score increment up to 35
+                    if (obs.x < -30) {
                         obstacles.splice(i, 1);
                         gameScore++;
+                        updateHighScore();
                     }
                 }
 
-                ctx.fillStyle = '#fff';
-                ctx.font = '14px sans-serif';
-                ctx.fillText(`SCORE: ${gameScore}`, 15, 20);
+                // 5. Phase 2 Logic (Boss Fight)
+                if (phase === 2) {
+                    if (boss.x > 380) boss.x -= 1.5; // Boss enters arena smoothly
+                    
+                    if (!boss.exploded) {
+                        // Draw Boss
+                        ctx.fillStyle = '#111';
+                        ctx.fillRect(boss.x, boss.y, boss.w, boss.h);
+                        ctx.fillStyle = '#ff003c'; // Evil eye
+                        ctx.fillRect(boss.x + 10, boss.y + 20, 20, 8);
+                        
+                        if (frameCount % 50 === 0 && boss.x <= 380) spawnBossBullet();
+                    }
+
+                    // Update Boss Bullets
+                    for (let i = bullets.length - 1; i >= 0; i--) {
+                        let b = bullets[i];
+                        b.x -= b.speed;
+                        ctx.fillStyle = '#ff003c'; // Bullet color
+                        ctx.fillRect(b.x, b.y, b.w, b.h);
+
+                        // Track dodges
+                        if (!b.dodged && b.x + b.w < player.x) {
+                            b.dodged = true;
+                            boss.dodges++;
+                            gameScore++; // Increases up to 55 (35 blocks + 20 dodges)
+                            updateHighScore();
+                        }
+
+                        // Bullet Collision
+                        if (player.x < b.x + b.w && player.x + player.w > b.x && player.y < b.y + b.h && player.y + player.h > b.y) {
+                            resetGameLevel();
+                        }
+                        if (b.x < -20) bullets.splice(i, 1);
+                    }
+
+                    // Empower Player after 20 dodges
+                    if (boss.dodges >= 20 && !player.hasGun && !boss.exploded) {
+                        player.hasGun = true;
+                        pBullets.push({ x: player.x + 30, y: player.y + 12, w: 15, h: 6, speed: 8 });
+                    }
+                }
+
+                // Player Bullets Logic (Transitions phase 2 -> 3)
+                for (let i = pBullets.length - 1; i >= 0; i--) {
+                    let pb = pBullets[i];
+                    pb.x += pb.speed;
+                    ctx.fillStyle = '#00f3ff';
+                    ctx.fillRect(pb.x, pb.y, pb.w, pb.h);
+
+                    if (pb.x > boss.x && pb.x < boss.x + boss.w && !boss.exploded) {
+                        boss.exploded = true;
+                        pBullets.splice(i, 1);
+                        phase = 3;
+                    }
+                }
+
+                // 6. Phase 3 (Win State)
+                if (phase === 3) {
+                    // Boss Explosion Animation
+                    ctx.fillStyle = '#ff8c00';
+                    ctx.beginPath();
+                    ctx.arc(boss.x + 30, boss.y + 40, 50 + (Math.sin(frameCount * 0.5) * 10), 0, Math.PI*2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#000';
+                    ctx.font = 'bold 22px sans-serif';
+                    ctx.fillText("LEVEL 1 COMPLETE!", 140, 80);
+                }
+
+                // 7. HUD Rendering
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 14px sans-serif';
+                ctx.fillText(`SCORE: ${gameScore}/55`, 15, 20);
+                ctx.fillText(`HI-SCORE: ${highscoreTracker}`, 350, 20);
+                
+                if (phase === 2 && !boss.exploded) {
+                    ctx.fillStyle = '#ff003c';
+                    ctx.fillText(`BOSS DODGES: ${boss.dodges}/20`, 150, 20);
+                }
 
                 gameAnimationId = requestAnimationFrame(updateGame);
             }
 
-            window.addEventListener('keydown', function handleJump(e) {
-                if (e.code === 'Space' && player.grounded) {
-                    player.dy = -9;
-                    player.grounded = false;
-                    e.preventDefault();
+            // Keyboard and Touch Event Listeners
+            const handleJump = (e) => {
+                if (e.code === 'Space' && player.grounded && isGameRunning) { 
+                    player.dy = -9; 
+                    player.grounded = false; 
+                    e.preventDefault(); 
                 }
-            });
-
-            canvas.onclick = () => {
-                if (player.grounded) {
-                    player.dy = -9;
-                    player.grounded = false;
-                }
+            };
+            window.addEventListener('keydown', handleJump);
+            canvas.onclick = () => { 
+                if (player.grounded && isGameRunning) { 
+                    player.dy = -9; 
+                    player.grounded = false; 
+                } 
             };
 
             cancelAnimationFrame(gameAnimationId);
@@ -780,7 +1409,7 @@
             resetIdleSystem();
         }
 
-        // Wholesome Particle System Engine
+        // Wholesome Particle System
         function triggerWholesomeHearts() {
             document.getElementById('wholesome-overlay').style.display = 'none';
             const pCanvas = document.getElementById('particleCanvas');
@@ -791,51 +1420,86 @@
 
             let particles = [];
             for (let i = 0; i < 40; i++) {
-                particles.push({
-                    x: Math.random() * pCanvas.width,
-                    y: pCanvas.height + Math.random() * 100,
-                    size: Math.random() * 15 + 10,
-                    speed: Math.random() * 2 + 1,
-                    alpha: 1
-                });
+                particles.push({ x: Math.random() * pCanvas.width, y: pCanvas.height + Math.random() * 100, size: Math.random() * 15 + 10, speed: Math.random() * 2 + 1, alpha: 1 });
             }
 
             function drawHearts() {
                 pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
                 let alive = false;
-
                 particles.forEach(p => {
-                    p.y -= p.speed;
-                    p.alpha -= 0.005;
-                    if (p.alpha > 0) {
-                        alive = true;
-                        pCtx.fillStyle = `rgba(255, 123, 158, ${p.alpha})`;
-                        pCtx.font = `${p.size}px Arial`;
-                        pCtx.fillText('🌸', p.x, p.y);
-                    }
+                    p.y -= p.speed; p.alpha -= 0.005;
+                    if (p.alpha > 0) { alive = true; pCtx.fillStyle = `rgba(255, 123, 158, ${p.alpha})`; pCtx.font = `${p.size}px Arial`; pCtx.fillText('🌸', p.x, p.y); }
                 });
-
-                if (alive) {
-                    requestAnimationFrame(drawHearts);
-                } else {
-                    pCanvas.style.display = 'none';
-                    resetIdleSystem();
-                }
+                if (alive) requestAnimationFrame(drawHearts);
+                else { pCanvas.style.display = 'none'; resetIdleSystem(); }
             }
             drawHearts();
         }
 
-        // Handle window resize cleanly for drawing elements
-        window.addEventListener('resize', () => {
-            const pCanvas = document.getElementById('particleCanvas');
-            if (pCanvas.style.display === 'block') {
-                pCanvas.width = window.innerWidth;
-                pCanvas.height = window.innerHeight;
-            }
+        // ==========================================
+        // STICKY NAV SCROLL BEHAVIOUR
+        // ==========================================
+        const mainNav = document.getElementById('main-nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) mainNav.classList.add('scrolled');
+            else mainNav.classList.remove('scrolled');
         }, { passive: true });
 
-        // Initialize on boot
-        resetIdleSystem();
+        // ==========================================
+        // SEARCH CLEAR BUTTON
+        // ==========================================
+        function toggleClearBtn() {
+            const btn = document.getElementById('search-clear-btn');
+            if (searchInput.value.length > 0) btn.classList.add('visible');
+            else btn.classList.remove('visible');
+        }
+
+        function clearSearch() {
+            searchInput.value = '';
+            toggleClearBtn();
+            handleSearch();
+            searchInput.focus();
+        }
+
+        // ==========================================
+        // DONATE MODAL
+        // ==========================================
+        // ─── CONFIGURE YOUR DONATE INFO HERE ───
+        const DONATE_UPI_ID   = 'your@upi';       // ← replace with your UPI ID
+        const DONATE_QR_SRC   = '';                // ← put your QR image path/URL here (e.g. 'qr.png')
+        // ────────────────────────────────────────
+
+        function openDonate() {
+            const modal = document.getElementById('donate-modal');
+            const upiEl = document.getElementById('donate-upi-id');
+            const qrBox = document.getElementById('donate-qr-box');
+            upiEl.textContent = DONATE_UPI_ID;
+
+            if (DONATE_QR_SRC) {
+                qrBox.innerHTML = `<img src="${DONATE_QR_SRC}" alt="Donation QR Code">`;
+            } else {
+                qrBox.innerHTML = `<span id="donate-qr-label" style="color:#8b949e; font-size:0.8rem; padding:1rem;">[ Scan to Pay ]<br><br>Add your QR image path<br>in the DONATE_QR_SRC variable</span>`;
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeDonate() {
+            document.getElementById('donate-modal').style.display = 'none';
+            document.getElementById('copy-confirm').style.opacity = '0';
+        }
+
+        function copyUpiId() {
+            navigator.clipboard.writeText(DONATE_UPI_ID).then(() => {
+                const msg = document.getElementById('copy-confirm');
+                msg.style.opacity = '1';
+                setTimeout(() => { msg.style.opacity = '0'; }, 2000);
+            });
+        }
+
+        window.addEventListener('resize', () => {
+            const pCanvas = document.getElementById('particleCanvas');
+            if (pCanvas.style.display === 'block') { pCanvas.width = window.innerWidth; pCanvas.height = window.innerHeight; }
+        }, { passive: true });
     </script>
 </body>
 </html>
